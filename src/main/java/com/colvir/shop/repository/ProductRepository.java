@@ -22,4 +22,8 @@ public class ProductRepository {
                 .findFirst()
                 .orElse(null);
     }
+
+    public Set<Product> getProducts() {
+        return products;
+    }
 }
