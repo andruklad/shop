@@ -7,8 +7,10 @@ import com.colvir.shop.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.Comparator;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.NoSuchElementException;
 
 @Service
 @RequiredArgsConstructor
@@ -28,6 +30,12 @@ public class ProductService {
 
     public void deleteByArticle(String article) {
         productRepository.deleteByArticle(article);
+    }
+
+    public Product getByMaxPrice() {
+        return productRepository.getProducts().stream()
+                .max(Comparator.comparing(Product::getPrice))
+                .orElseThrow(NoSuchElementException::new);
     }
 
     public ProductsByCategoryResponce getAllProductsByCategory(String categoryCode) {

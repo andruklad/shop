@@ -34,6 +34,11 @@ public class ProductController {
         return new ResponseEntity(HttpStatus.OK);
     }
 
+    @GetMapping("getByMaxPrice")
+    public Product getByMaxPrice() {
+        return productService.getByMaxPrice();
+    }
+
     @GetMapping("getAllProductsByCategory")
     public ProductsByCategoryResponce getAllProductsByCategory(@RequestParam String categoryCode) {
         return productService.getAllProductsByCategory(categoryCode);
