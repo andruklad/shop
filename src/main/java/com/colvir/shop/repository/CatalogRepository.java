@@ -1,12 +1,14 @@
 package com.colvir.shop.repository;
 
 import com.colvir.shop.model.Catalog;
+import lombok.Getter;
 import org.springframework.stereotype.Repository;
 
 import java.util.HashSet;
 import java.util.Set;
 
 @Repository
+@Getter
 public class CatalogRepository {
 
     private final Set<Catalog> catalogs = new HashSet<>();

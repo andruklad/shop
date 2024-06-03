@@ -5,9 +5,9 @@ import lombok.Data;
 @Data
 public class Category {
 
-    private String code;
+    private final String code;
 
-    private String name;
+    private final String name;
 
-    private String catalogCode;
+    private final String catalogCode;
 }

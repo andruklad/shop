@@ -5,11 +5,11 @@ import lombok.Data;
 @Data
 public class Product {
 
-    private String article;
+    private final String article;
 
-    private String name;
+    private final String name;
 
-    private Double price;
+    private final Double price;
 
-    private String categoryCode;
+    private final String categoryCode;
 }
