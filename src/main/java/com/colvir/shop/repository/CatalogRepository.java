@@ -24,4 +24,8 @@ public class CatalogRepository {
                 .findFirst()
                 .orElse(null);
     }
+
+    public void deleteByCode(String categoryCode) {
+        catalogs.remove(getByCode(categoryCode));
+    }
 }

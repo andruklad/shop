@@ -20,6 +20,20 @@ public class CatalogController {
         return catalogService.save(catalog);
     }
 
+    @GetMapping("getByCode")
+    public Catalog getByCode(@RequestParam String catalogCode) {
+
+        return catalogService.getByCode(catalogCode);
+    }
+
+    @DeleteMapping("deleteByCode")
+    public ResponseEntity deleteByCode(@RequestParam String catalogCode) {
+
+        catalogService.deleteByCode(catalogCode);
+
+        return new ResponseEntity(HttpStatus.OK);
+    }
+
     @GetMapping("getAllCatalogs")
     public CatalogsResponce getAllCatalogs() {
         return catalogService.getAllCatalogs();

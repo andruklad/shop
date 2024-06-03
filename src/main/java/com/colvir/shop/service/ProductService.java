@@ -22,6 +22,14 @@ public class ProductService {
         return productRepository.save(product);
     }
 
+    public Product getByArticle(String article) {
+        return productRepository.getByArticle(article);
+    }
+
+    public void deleteByArticle(String article) {
+        productRepository.deleteByArticle(article);
+    }
+
     public ProductsByCategoryResponce getAllProductsByCategory(String categoryCode) {
         Set<Product> products = productRepository.getProducts().stream()
                 .filter(product -> product.getCategoryCode().equals(categoryCode))

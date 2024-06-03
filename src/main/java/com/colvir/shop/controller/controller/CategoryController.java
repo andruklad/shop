@@ -20,6 +20,20 @@ public class CategoryController {
         return categoryService.save(category);
     }
 
+    @GetMapping("getByCode")
+    public Category getByCode(@RequestParam String categoryCode) {
+
+        return categoryService.getByCode(categoryCode);
+    }
+
+    @DeleteMapping("deleteByCode")
+    public ResponseEntity deleteByCode(@RequestParam String categoryCode) {
+
+        categoryService.deleteByCode(categoryCode);
+
+        return new ResponseEntity(HttpStatus.OK);
+    }
+
     @GetMapping("getAllCategoriesByCatalog")
     public CategoriesByCatalogResponce getAllCategoriesByCatalog(@RequestParam String catalogCode) {
         return categoryService.getAllCategoriesByCatalog(catalogCode);

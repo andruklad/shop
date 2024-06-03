@@ -24,4 +24,8 @@ public class ProductRepository {
                 .findFirst()
                 .orElse(null);
     }
+
+    public void deleteByArticle(String article) {
+        products.remove(getByArticle(article));
+    }
 }

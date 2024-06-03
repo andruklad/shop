@@ -24,4 +24,8 @@ public class CategoryRepository {
                 .findFirst()
                 .orElse(null);
     }
+
+    public void deleteByCode(String categoryCode) {
+        categories.remove(getByCode(categoryCode));
+    }
 }

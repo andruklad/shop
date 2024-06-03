@@ -25,6 +25,14 @@ public class CategoryService {
         return categoryRepository.save(category);
     }
 
+    public Category getByCode(String categoryCode) {
+        return categoryRepository.getByCode(categoryCode);
+    }
+
+    public void deleteByCode(String categoryCode) {
+        categoryRepository.deleteByCode(categoryCode);
+    }
+
     public CategoriesByCatalogResponce getAllCategoriesByCatalog(String catalogCode) {
         // Отбор категорий из указанного каталога
         Set<Category> categories = categoryRepository.getCategories().stream()

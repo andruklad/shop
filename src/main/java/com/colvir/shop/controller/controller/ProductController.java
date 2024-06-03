@@ -20,6 +20,20 @@ public class ProductController {
         return productService.save(product);
     }
 
+    @GetMapping("getByArticle")
+    public Product getByArticle(@RequestParam String article) {
+
+        return productService.getByArticle(article);
+    }
+
+    @DeleteMapping("deleteByArticle")
+    public ResponseEntity deleteByArticle(@RequestParam String article) {
+
+        productService.deleteByArticle(article);
+
+        return new ResponseEntity(HttpStatus.OK);
+    }
+
     @GetMapping("getAllProductsByCategory")
     public ProductsByCategoryResponce getAllProductsByCategory(@RequestParam String categoryCode) {
         return productService.getAllProductsByCategory(categoryCode);

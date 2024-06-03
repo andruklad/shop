@@ -25,6 +25,14 @@ public class CatalogService {
         return catalogRepository.save(catalog);
     }
 
+    public Catalog getByCode(String catalogCode) {
+        return catalogRepository.getByCode(catalogCode);
+    }
+
+    public void deleteByCode(String catalogCode) {
+        catalogRepository.deleteByCode(catalogCode);
+    }
+
     private void addCatalog(String catalogCode, String catalogName) {
         Catalog catalog = new Catalog(catalogCode, catalogName);
         save(catalog);
