@@ -26,6 +26,12 @@ public class CatalogController {
         return catalogService.getByCode(catalogCode);
     }
 
+    @PutMapping("update")
+    public Catalog update(@RequestBody Catalog catalog) {
+
+        return catalogService.update(catalog);
+    }
+
     @DeleteMapping("deleteByCode")
     public ResponseEntity deleteByCode(@RequestParam String catalogCode) {
 
@@ -36,6 +42,7 @@ public class CatalogController {
 
     @GetMapping("getAllCatalogs")
     public CatalogsResponce getAllCatalogs() {
+
         return catalogService.getAllCatalogs();
     }
 

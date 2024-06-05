@@ -17,6 +17,7 @@ public class CategoryController {
 
     @PostMapping("save")
     public Category save(@RequestBody Category category) {
+
         return categoryService.save(category);
     }
 
@@ -24,6 +25,11 @@ public class CategoryController {
     public Category getByCode(@RequestParam String categoryCode) {
 
         return categoryService.getByCode(categoryCode);
+    }
+
+    @PutMapping("update")
+    public Category update(@RequestBody Category category) {
+        return categoryService.update(category);
     }
 
     @DeleteMapping("deleteByCode")
@@ -36,6 +42,7 @@ public class CategoryController {
 
     @GetMapping("getAllCategoriesByCatalog")
     public CategoriesByCatalogResponce getAllCategoriesByCatalog(@RequestParam String catalogCode) {
+
         return categoryService.getAllCategoriesByCatalog(catalogCode);
     }
 

@@ -17,6 +17,7 @@ public class ProductController {
 
     @PostMapping("save")
     public Product save(@RequestBody Product product) {
+
         return productService.save(product);
     }
 
@@ -24,6 +25,12 @@ public class ProductController {
     public Product getByArticle(@RequestParam String article) {
 
         return productService.getByArticle(article);
+    }
+
+    @PutMapping("update")
+    public Product update(@RequestBody Product product) {
+
+        return productService.update(product);
     }
 
     @DeleteMapping("deleteByArticle")
@@ -36,11 +43,13 @@ public class ProductController {
 
     @GetMapping("getByMaxPrice")
     public Product getByMaxPrice() {
+
         return productService.getByMaxPrice();
     }
 
     @GetMapping("getAllProductsByCategory")
     public ProductsByCategoryResponce getAllProductsByCategory(@RequestParam String categoryCode) {
+
         return productService.getAllProductsByCategory(categoryCode);
     }
 

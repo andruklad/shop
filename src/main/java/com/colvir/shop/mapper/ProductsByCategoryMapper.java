@@ -2,16 +2,15 @@ package com.colvir.shop.mapper;
 
 import com.colvir.shop.dto.ProductsByCategoryResponce;
 import com.colvir.shop.model.Product;
-import org.springframework.stereotype.Component;
+import org.mapstruct.Mapper;
+import org.mapstruct.ReportingPolicy;
 
 import java.util.Set;
 
-@Component
-public class ProductsByCategoryMapper {
+@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.ERROR)
+public interface ProductsByCategoryMapper {
 
-    public ProductsByCategoryResponce productsToProductsByCategoryResponce(Set<Product> products) {
-        ProductsByCategoryResponce productsByCategoryResponce = new ProductsByCategoryResponce();
-        productsByCategoryResponce.setProducts(products);
-        return productsByCategoryResponce;
+    default ProductsByCategoryResponce productsToProductsByCategoryResponce(Set<Product> products) {
+        return new ProductsByCategoryResponce(products);
     }
 }

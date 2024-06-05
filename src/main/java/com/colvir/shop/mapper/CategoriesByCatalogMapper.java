@@ -2,16 +2,15 @@ package com.colvir.shop.mapper;
 
 import com.colvir.shop.dto.CategoriesByCatalogResponce;
 import com.colvir.shop.dto.CategoryWithProducts;
-import org.springframework.stereotype.Component;
+import org.mapstruct.Mapper;
+import org.mapstruct.ReportingPolicy;
 
 import java.util.Set;
 
-@Component
-public class CategoriesByCatalogMapper {
+@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.ERROR)
+public interface CategoriesByCatalogMapper {
 
-    public CategoriesByCatalogResponce categoriesToCategoriesByCatalogResponce(Set<CategoryWithProducts> categoriesWithProducts) {
-        CategoriesByCatalogResponce categoriesByCatalogResponce = new CategoriesByCatalogResponce();
-        categoriesByCatalogResponce.setCategories(categoriesWithProducts);
-        return categoriesByCatalogResponce;
+    default CategoriesByCatalogResponce categoriesToCategoriesByCatalogResponce(Set<CategoryWithProducts> categoriesWithProducts) {
+        return new CategoriesByCatalogResponce(categoriesWithProducts);
     }
 }

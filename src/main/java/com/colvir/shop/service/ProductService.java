@@ -1,6 +1,7 @@
 package com.colvir.shop.service;
 
 import com.colvir.shop.dto.ProductsByCategoryResponce;
+import com.colvir.shop.expception.ProductNotFoundException;
 import com.colvir.shop.mapper.ProductsByCategoryMapper;
 import com.colvir.shop.model.Product;
 import com.colvir.shop.repository.ProductRepository;
@@ -8,9 +9,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.Comparator;
+import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.NoSuchElementException;
 
 @Service
 @RequiredArgsConstructor
@@ -25,10 +26,29 @@ public class ProductService {
     }
 
     public Product getByArticle(String article) {
-        return productRepository.getByArticle(article);
+
+        Product product = productRepository.getByArticle(article);
+
+        if (product == null) {
+            throw new ProductNotFoundException(String.format("Продукт с артиклем %s не найден", article));
+        }
+
+        return product;
+    }
+
+    public Product update(Product productForUpdate) {
+
+        // Проверка наличия, чтобы сообщить об ошибке в случае отсутствия
+        getByArticle(productForUpdate.getArticle());
+
+        return productRepository.update(productForUpdate);
     }
 
     public void deleteByArticle(String article) {
+
+        // Проверка наличия, чтобы сообщить об ошибке в случае отсутствия
+        getByArticle(article);
+
         productRepository.deleteByArticle(article);
     }
 

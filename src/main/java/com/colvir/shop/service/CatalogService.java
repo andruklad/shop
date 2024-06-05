@@ -2,6 +2,7 @@ package com.colvir.shop.service;
 
 import com.colvir.shop.dto.CatalogWithCategories;
 import com.colvir.shop.dto.CatalogsResponce;
+import com.colvir.shop.expception.CatalogNotFoundException;
 import com.colvir.shop.mapper.CatalogsMapper;
 import com.colvir.shop.model.Catalog;
 import com.colvir.shop.repository.CatalogRepository;
@@ -26,7 +27,22 @@ public class CatalogService {
     }
 
     public Catalog getByCode(String catalogCode) {
+
+        Catalog catalog = catalogRepository.getByCode(catalogCode);
+
+        if (catalog == null) {
+            throw new CatalogNotFoundException(String.format("Каталог с кодом %s не найден", catalogCode));
+        }
+
         return catalogRepository.getByCode(catalogCode);
+    }
+
+    public Catalog update(Catalog catalogForUpdate) {
+
+        // Проверка наличия, чтобы сообщить об ошибке в случае отсутствия
+        getByCode(catalogForUpdate.getCode());
+
+        return catalogRepository.update(catalogForUpdate);
     }
 
     public void deleteByCode(String catalogCode) {

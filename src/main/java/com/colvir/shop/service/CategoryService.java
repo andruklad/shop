@@ -2,6 +2,7 @@ package com.colvir.shop.service;
 
 import com.colvir.shop.dto.CategoriesByCatalogResponce;
 import com.colvir.shop.dto.CategoryWithProducts;
+import com.colvir.shop.expception.CategoryNotFoundException;
 import com.colvir.shop.mapper.CategoriesByCatalogMapper;
 import com.colvir.shop.model.Category;
 import com.colvir.shop.repository.CategoryRepository;
@@ -26,14 +27,34 @@ public class CategoryService {
     }
 
     public Category getByCode(String categoryCode) {
-        return categoryRepository.getByCode(categoryCode);
+
+        Category category = categoryRepository.getByCode(categoryCode);
+
+        if (category == null) {
+            throw new CategoryNotFoundException(String.format("Категория с кодом %s не найдена", categoryCode));
+        }
+
+        return category;
+    }
+
+    public Category update(Category categoryForUpdate) {
+
+        // Проверка наличия, чтобы сообщить об ошибке в случае отсутствия
+        getByCode(categoryForUpdate.getCode());
+
+        return categoryRepository.update(categoryForUpdate);
     }
 
     public void deleteByCode(String categoryCode) {
+
+        // Проверка наличия, чтобы сообщить об ошибке в случае отсутствия
+        getByCode(categoryCode);
+
         categoryRepository.deleteByCode(categoryCode);
     }
 
     public CategoriesByCatalogResponce getAllCategoriesByCatalog(String catalogCode) {
+
         // Отбор категорий из указанного каталога
         Set<Category> categories = categoryRepository.getCategories().stream()
                 .filter(category -> category.getCatalogCode().equals(catalogCode))
@@ -41,7 +62,7 @@ public class CategoryService {
 
         // Заполнение продуктов каждой категории для объекта-ответа
         Set<CategoryWithProducts> categoriesWithProducts = categories.stream()
-                .map(category -> new CategoryWithProducts(category.getCode(), productService.getAllProductsByCategory(category.getCode()).getProducts()))
+                .map(category -> new CategoryWithProducts(category, productService.getAllProductsByCategory(category.getCode()).getProducts()))
                 .collect(Collectors.toSet());
 
         // Маппинг в объект-ответ

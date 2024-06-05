@@ -1,15 +1,17 @@
 package com.colvir.shop.model;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
 import java.util.Objects;
 
 @Data
+@AllArgsConstructor
 public class Catalog {
 
-    private final String code;
+    private String code;
 
-    private final String name;
+    private String name;
 
     @Override
     public boolean equals(Object o) {

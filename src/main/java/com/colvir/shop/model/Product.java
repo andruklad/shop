@@ -1,19 +1,21 @@
 package com.colvir.shop.model;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
 import java.util.Objects;
 
 @Data
+@AllArgsConstructor
 public class Product {
 
-    private final String article;
+    private String article;
 
-    private final String name;
+    private String name;
 
-    private final Double price;
+    private Double price;
 
-    private final String categoryCode;
+    private String categoryCode;
 
     @Override
     public boolean equals(Object o) {
