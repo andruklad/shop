@@ -11,6 +11,7 @@ import java.util.Set;
 public interface CategoriesByCatalogMapper {
 
     default CategoriesByCatalogResponce categoriesToCategoriesByCatalogResponce(Set<CategoryWithProducts> categoriesWithProducts) {
+
         return new CategoriesByCatalogResponce(categoriesWithProducts);
     }
 }
