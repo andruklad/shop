@@ -34,7 +34,7 @@ public class CatalogService {
             throw new CatalogNotFoundException(String.format("Каталог с кодом %s не найден", catalogCode));
         }
 
-        return catalogRepository.getByCode(catalogCode);
+        return catalog;
     }
 
     public Catalog update(Catalog catalogForUpdate) {
