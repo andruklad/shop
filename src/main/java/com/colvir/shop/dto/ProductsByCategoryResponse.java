@@ -1,5 +1,6 @@
 package com.colvir.shop.dto;
 
+import com.colvir.shop.model.Product;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
@@ -7,7 +8,7 @@ import java.util.Set;
 
 @Data
 @AllArgsConstructor
-public class CatalogsResponce {
+public class ProductsByCategoryResponse {
 
-    private Set<CatalogWithCategories> catalogs;
+    private Set<Product> products;
 }

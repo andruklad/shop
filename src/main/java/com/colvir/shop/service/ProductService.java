@@ -1,6 +1,6 @@
 package com.colvir.shop.service;
 
-import com.colvir.shop.dto.ProductsByCategoryResponce;
+import com.colvir.shop.dto.ProductsByCategoryResponse;
 import com.colvir.shop.expception.ProductNotFoundException;
 import com.colvir.shop.mapper.ProductsByCategoryMapper;
 import com.colvir.shop.model.Product;
@@ -58,12 +58,12 @@ public class ProductService {
                 .orElseThrow(NoSuchElementException::new);
     }
 
-    public ProductsByCategoryResponce getAllProductsByCategory(String categoryCode) {
+    public ProductsByCategoryResponse getAllProductsByCategory(String categoryCode) {
         Set<Product> products = productRepository.getProducts().stream()
                 .filter(product -> product.getCategoryCode().equals(categoryCode))
                 .collect(Collectors.toSet());
 
-        return productsByCategoryMapper.productsToProductsByCategoryResponce(products);
+        return productsByCategoryMapper.productsToProductsByCategoryResponse(products);
     }
 
     private void addProduct(String article, String name, Double price, String categoryCode) {

@@ -1,6 +1,6 @@
 package com.colvir.shop.controller.controller;
 
-import com.colvir.shop.dto.CatalogsResponce;
+import com.colvir.shop.dto.CatalogsResponse;
 import com.colvir.shop.model.Catalog;
 import com.colvir.shop.service.CatalogService;
 import lombok.RequiredArgsConstructor;
@@ -41,7 +41,7 @@ public class CatalogController {
     }
 
     @GetMapping("getAllCatalogs")
-    public CatalogsResponce getAllCatalogs() {
+    public CatalogsResponse getAllCatalogs() {
 
         return catalogService.getAllCatalogs();
     }

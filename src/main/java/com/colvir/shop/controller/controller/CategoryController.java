@@ -1,6 +1,6 @@
 package com.colvir.shop.controller.controller;
 
-import com.colvir.shop.dto.CategoriesByCatalogResponce;
+import com.colvir.shop.dto.CategoriesByCatalogResponse;
 import com.colvir.shop.model.Category;
 import com.colvir.shop.service.CategoryService;
 import lombok.RequiredArgsConstructor;
@@ -41,7 +41,7 @@ public class CategoryController {
     }
 
     @GetMapping("getAllCategoriesByCatalog")
-    public CategoriesByCatalogResponce getAllCategoriesByCatalog(@RequestParam String catalogCode) {
+    public CategoriesByCatalogResponse getAllCategoriesByCatalog(@RequestParam String catalogCode) {
 
         return categoryService.getAllCategoriesByCatalog(catalogCode);
     }

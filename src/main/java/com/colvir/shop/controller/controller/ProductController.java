@@ -1,6 +1,6 @@
 package com.colvir.shop.controller.controller;
 
-import com.colvir.shop.dto.ProductsByCategoryResponce;
+import com.colvir.shop.dto.ProductsByCategoryResponse;
 import com.colvir.shop.model.Product;
 import com.colvir.shop.service.ProductService;
 import lombok.RequiredArgsConstructor;
@@ -48,7 +48,7 @@ public class ProductController {
     }
 
     @GetMapping("getAllProductsByCategory")
-    public ProductsByCategoryResponce getAllProductsByCategory(@RequestParam String categoryCode) {
+    public ProductsByCategoryResponse getAllProductsByCategory(@RequestParam String categoryCode) {
 
         return productService.getAllProductsByCategory(categoryCode);
     }

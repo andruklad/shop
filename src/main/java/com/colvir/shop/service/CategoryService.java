@@ -1,6 +1,6 @@
 package com.colvir.shop.service;
 
-import com.colvir.shop.dto.CategoriesByCatalogResponce;
+import com.colvir.shop.dto.CategoriesByCatalogResponse;
 import com.colvir.shop.dto.CategoryWithProducts;
 import com.colvir.shop.expception.CategoryNotFoundException;
 import com.colvir.shop.mapper.CategoriesByCatalogMapper;
@@ -53,7 +53,7 @@ public class CategoryService {
         categoryRepository.deleteByCode(categoryCode);
     }
 
-    public CategoriesByCatalogResponce getAllCategoriesByCatalog(String catalogCode) {
+    public CategoriesByCatalogResponse getAllCategoriesByCatalog(String catalogCode) {
 
         // Отбор категорий из указанного каталога
         Set<Category> categories = categoryRepository.getCategories().stream()
@@ -66,7 +66,7 @@ public class CategoryService {
                 .collect(Collectors.toSet());
 
         // Маппинг в объект-ответ
-        return categoriesByCatalogMapper.categoriesToCategoriesByCatalogResponce(categoriesWithProducts);
+        return categoriesByCatalogMapper.categoriesToCategoriesByCatalogResponse(categoriesWithProducts);
     }
 
     private void addCategory(String categoryCode, String categoryName, String catalogCode) {

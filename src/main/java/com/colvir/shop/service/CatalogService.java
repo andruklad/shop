@@ -1,7 +1,7 @@
 package com.colvir.shop.service;
 
 import com.colvir.shop.dto.CatalogWithCategories;
-import com.colvir.shop.dto.CatalogsResponce;
+import com.colvir.shop.dto.CatalogsResponse;
 import com.colvir.shop.expception.CatalogNotFoundException;
 import com.colvir.shop.mapper.CatalogsMapper;
 import com.colvir.shop.model.Catalog;
@@ -54,7 +54,7 @@ public class CatalogService {
         save(catalog);
     }
 
-    public CatalogsResponce getAllCatalogs() {
+    public CatalogsResponse getAllCatalogs() {
 
         // Заполнение категории каждого каталога для объекта-ответа
         Set<CatalogWithCategories> catalogsWithCategories = catalogRepository.getCatalogs().stream()
@@ -62,7 +62,7 @@ public class CatalogService {
                 .collect(Collectors.toSet());
 
         // Маппинг в объект-ответ
-        return catalogsMapper.catalogsToCatalogsResponce(catalogsWithCategories);
+        return catalogsMapper.catalogsToCatalogsResponse(catalogsWithCategories);
     }
 
     public void loadTestData() {

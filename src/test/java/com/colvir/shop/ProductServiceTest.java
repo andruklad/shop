@@ -1,6 +1,6 @@
 package com.colvir.shop;
 
-import com.colvir.shop.dto.ProductsByCategoryResponce;
+import com.colvir.shop.dto.ProductsByCategoryResponse;
 import com.colvir.shop.expception.ProductNotFoundException;
 import com.colvir.shop.mapper.ProductsByCategoryMapper;
 import com.colvir.shop.model.Product;
@@ -151,14 +151,14 @@ public class ProductServiceTest {
 
         // Подготовка ожидаемого результата
         Set<Product> expectedProducts = new HashSet<>(Arrays.asList(product1, product2));
-        ProductsByCategoryResponce expectedProductsByCategoryResponce = new ProductsByCategoryResponce(expectedProducts);
+        ProductsByCategoryResponse expectedProductsByCategoryResponse = new ProductsByCategoryResponse(expectedProducts);
 
         when(productRepository.getProducts()).thenReturn(new HashSet<>(Arrays.asList(product1, product2, product3)));
-        when(productsByCategoryMapper.productsToProductsByCategoryResponce(expectedProducts)).thenReturn(expectedProductsByCategoryResponce);
+        when(productsByCategoryMapper.productsToProductsByCategoryResponse(expectedProducts)).thenReturn(expectedProductsByCategoryResponse);
 
         // Начало теста
-        ProductsByCategoryResponce actualProductsByCategoryResponce = productService.getAllProductsByCategory("CategoryCode1");
-        assertEquals(expectedProductsByCategoryResponce, actualProductsByCategoryResponce);
+        ProductsByCategoryResponse actualProductsByCategoryResponse = productService.getAllProductsByCategory("CategoryCode1");
+        assertEquals(expectedProductsByCategoryResponse, actualProductsByCategoryResponse);
         verify(productRepository).getProducts();
         verifyNoMoreInteractions(productRepository);
     }

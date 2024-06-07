@@ -1,6 +1,6 @@
 package com.colvir.shop;
 
-import com.colvir.shop.dto.CategoriesByCatalogResponce;
+import com.colvir.shop.dto.CategoriesByCatalogResponse;
 import com.colvir.shop.dto.CategoryWithProducts;
 import com.colvir.shop.expception.CategoryNotFoundException;
 import com.colvir.shop.mapper.CategoriesByCatalogMapperImpl;
@@ -153,15 +153,15 @@ public class CategoryServiceTest {
 
         CategoryWithProducts categoryWithProducts1 = new CategoryWithProducts(category1, new HashSet<>(Arrays.asList(product1, product2)));
         CategoryWithProducts categoryWithProducts2 = new CategoryWithProducts(category2, new HashSet<>(List.of(product3)));
-        CategoriesByCatalogResponce expectedCategoriesByCatalogResponce =
-                new CategoriesByCatalogResponce(new HashSet<>(Arrays.asList(categoryWithProducts1, categoryWithProducts2)));
+        CategoriesByCatalogResponse expectedCategoriesByCatalogResponse =
+                new CategoriesByCatalogResponse(new HashSet<>(Arrays.asList(categoryWithProducts1, categoryWithProducts2)));
 
         when(categoryRepository.getCategories()).thenReturn(new HashSet<>(Arrays.asList(category1, category2, category3)));
         when(productRepository.getProducts()).thenReturn(new HashSet<>(Arrays.asList(product1, product2, product3)));
 
         // Начало теста
-        CategoriesByCatalogResponce actualCategoriesByCatalogResponce = categoryService.getAllCategoriesByCatalog(catalogCode);
-        assertEquals(expectedCategoriesByCatalogResponce, actualCategoriesByCatalogResponce);
+        CategoriesByCatalogResponse actualCategoriesByCatalogResponse = categoryService.getAllCategoriesByCatalog(catalogCode);
+        assertEquals(expectedCategoriesByCatalogResponse, actualCategoriesByCatalogResponse);
         verify(categoryRepository).getCategories();
         verifyNoMoreInteractions(categoryRepository);
     }

@@ -7,7 +7,7 @@ import java.util.Set;
 
 @Data
 @AllArgsConstructor
-public class CategoriesByCatalogResponce {
+public class CatalogsResponse {
 
-    private Set<CategoryWithProducts> categories;
+    private Set<CatalogWithCategories> catalogs;
 }

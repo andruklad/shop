@@ -1,7 +1,7 @@
 package com.colvir.shop;
 
 import com.colvir.shop.dto.CatalogWithCategories;
-import com.colvir.shop.dto.CatalogsResponce;
+import com.colvir.shop.dto.CatalogsResponse;
 import com.colvir.shop.dto.CategoryWithProducts;
 import com.colvir.shop.expception.CatalogNotFoundException;
 import com.colvir.shop.mapper.CatalogsMapperImpl;
@@ -145,15 +145,15 @@ public class CatalogServiceTest {
         CatalogWithCategories catalogWithCategories1 = new CatalogWithCategories(catalog1.getCode(), new HashSet<>(List.of(categoryWithProducts1)));
         CatalogWithCategories catalogWithCategories2 = new CatalogWithCategories(catalog2.getCode(), new HashSet<>(List.of(categoryWithProducts2)));
 
-        CatalogsResponce expectedCatalogsResponce = new CatalogsResponce(new HashSet<>(Arrays.asList(catalogWithCategories1, catalogWithCategories2)));
+        CatalogsResponse expectedCatalogsResponse = new CatalogsResponse(new HashSet<>(Arrays.asList(catalogWithCategories1, catalogWithCategories2)));
 
         when(catalogRepository.getCatalogs()).thenReturn(new HashSet<>(Arrays.asList(catalog1, catalog2)));
         when(categoryRepository.getCategories()).thenReturn(new HashSet<>(Arrays.asList(category1, category2)));
         when(productRepository.getProducts()).thenReturn(new HashSet<>(Arrays.asList(product1, product2)));
 
         //Начало теста
-        CatalogsResponce actualCatalogsResponce = catalogService.getAllCatalogs();
-        assertEquals(expectedCatalogsResponce, actualCatalogsResponce);
+        CatalogsResponse actualCatalogsResponse = catalogService.getAllCatalogs();
+        assertEquals(expectedCatalogsResponse, actualCatalogsResponse);
         verify(catalogRepository).getCatalogs();
         verifyNoMoreInteractions(catalogRepository);
     }
