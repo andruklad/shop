@@ -1,4 +1,4 @@
-package com.colvir.shop.controller.controller;
+package com.colvir.shop.controller;
 
 import com.colvir.shop.dto.ProductsByCategoryResponse;
 import com.colvir.shop.model.Product;
@@ -21,7 +21,7 @@ public class ProductController {
         return productService.save(product);
     }
 
-    @GetMapping("getByArticle")
+    @GetMapping("get-by-article")
     public Product getByArticle(@RequestParam String article) {
 
         return productService.getByArticle(article);
@@ -33,7 +33,7 @@ public class ProductController {
         return productService.update(product);
     }
 
-    @DeleteMapping("deleteByArticle")
+    @DeleteMapping("delete-by-article")
     public ResponseEntity deleteByArticle(@RequestParam String article) {
 
         productService.deleteByArticle(article);
@@ -41,19 +41,19 @@ public class ProductController {
         return new ResponseEntity(HttpStatus.OK);
     }
 
-    @GetMapping("getByMaxPrice")
+    @GetMapping("get-by-max-price")
     public Product getByMaxPrice() {
 
         return productService.getByMaxPrice();
     }
 
-    @GetMapping("getAllProductsByCategory")
+    @GetMapping("get-all-products-by-category")
     public ProductsByCategoryResponse getAllProductsByCategory(@RequestParam String categoryCode) {
 
         return productService.getAllProductsByCategory(categoryCode);
     }
 
-    @GetMapping("loadTestData")
+    @GetMapping("load-test-data")
     public ResponseEntity loadTestData() {
 
         // Загрузка тестовых данных

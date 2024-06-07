@@ -1,4 +1,4 @@
-package com.colvir.shop.controller.controller;
+package com.colvir.shop.controller;
 
 import com.colvir.shop.dto.CategoriesByCatalogResponse;
 import com.colvir.shop.model.Category;
@@ -21,7 +21,7 @@ public class CategoryController {
         return categoryService.save(category);
     }
 
-    @GetMapping("getByCode")
+    @GetMapping("get-by-code")
     public Category getByCode(@RequestParam String categoryCode) {
 
         return categoryService.getByCode(categoryCode);
@@ -32,7 +32,7 @@ public class CategoryController {
         return categoryService.update(category);
     }
 
-    @DeleteMapping("deleteByCode")
+    @DeleteMapping("delete-by-code")
     public ResponseEntity deleteByCode(@RequestParam String categoryCode) {
 
         categoryService.deleteByCode(categoryCode);
@@ -40,13 +40,13 @@ public class CategoryController {
         return new ResponseEntity(HttpStatus.OK);
     }
 
-    @GetMapping("getAllCategoriesByCatalog")
+    @GetMapping("get-all-categories-by-catalog")
     public CategoriesByCatalogResponse getAllCategoriesByCatalog(@RequestParam String catalogCode) {
 
         return categoryService.getAllCategoriesByCatalog(catalogCode);
     }
 
-    @GetMapping("loadTestData")
+    @GetMapping("load-test-data")
     public ResponseEntity loadTestData() {
 
         // Загрузка тестовых данных
