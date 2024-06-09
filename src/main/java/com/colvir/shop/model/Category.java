@@ -20,11 +20,11 @@ public class Category {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Category category = (Category) o;
-        return Objects.equals(code, category.code);
+        return Objects.equals(code, category.code) && Objects.equals(name, category.name) && Objects.equals(catalogCode, category.catalogCode);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(code);
+        return Objects.hash(code, name, catalogCode);
     }
 }

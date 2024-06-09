@@ -22,11 +22,11 @@ public class Product {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Product product = (Product) o;
-        return Objects.equals(article, product.article);
+        return Objects.equals(article, product.article) && Objects.equals(name, product.name) && Objects.equals(price, product.price) && Objects.equals(categoryCode, product.categoryCode);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(article);
+        return Objects.hash(article, name, price, categoryCode);
     }
 }

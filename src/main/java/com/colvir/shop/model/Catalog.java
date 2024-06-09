@@ -18,11 +18,11 @@ public class Catalog {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Catalog catalog = (Catalog) o;
-        return Objects.equals(code, catalog.code);
+        return Objects.equals(code, catalog.code) && Objects.equals(name, catalog.name);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(code);
+        return Objects.hash(code, name);
     }
 }
