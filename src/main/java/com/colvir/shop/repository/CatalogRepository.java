@@ -1,45 +1,18 @@
 package com.colvir.shop.repository;
 
 import com.colvir.shop.model.Catalog;
-import lombok.Getter;
-import org.springframework.stereotype.Repository;
 
-import java.util.HashSet;
 import java.util.Set;
 
-@Repository
-@Getter
-public class CatalogRepository {
+public interface CatalogRepository {
 
-    private final Set<Catalog> catalogs = new HashSet<>();
+    Catalog save(Catalog catalog);
 
-    public Catalog save(Catalog catalog) {
+    Catalog getByCode(String catalogCode);
 
-        catalogs.add(catalog);
-        return catalog;
-    }
+    Catalog update(Catalog catalogForUpdate);
 
-    public Catalog getByCode(String catalogCode) {
+    void deleteByCode(String categoryCode);
 
-        return catalogs.stream()
-                .filter(catalog -> catalog.getCode().equals(catalogCode))
-                .findFirst()
-                .orElse(null);
-    }
-
-    public Catalog update(Catalog catalogForUpdate) {
-
-        Catalog catalog = getByCode(catalogForUpdate.getCode());
-
-        if (catalog != null) {
-            catalog.setName(catalogForUpdate.getName());
-        }
-
-        return catalog;
-    }
-
-    public void deleteByCode(String categoryCode) {
-
-        catalogs.remove(getByCode(categoryCode));
-    }
+    Set<Catalog> getCatalogs();
 }
