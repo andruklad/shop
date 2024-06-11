@@ -33,11 +33,11 @@ public class CategoryController {
     }
 
     @DeleteMapping("delete-by-code")
-    public ResponseEntity deleteByCode(@RequestParam String categoryCode) {
+    public ResponseEntity<?> deleteByCode(@RequestParam String categoryCode) {
 
         categoryService.deleteByCode(categoryCode);
 
-        return new ResponseEntity(HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @GetMapping("get-all-categories-by-catalog")
@@ -47,11 +47,11 @@ public class CategoryController {
     }
 
     @GetMapping("load-test-data")
-    public ResponseEntity loadTestData() {
+    public ResponseEntity<?> loadTestData() {
 
         // Загрузка тестовых данных
         categoryService.loadTestData();
 
-        return new ResponseEntity(HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }

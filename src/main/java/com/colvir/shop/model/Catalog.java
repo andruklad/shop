@@ -13,12 +13,21 @@ public class Catalog {
 
     private String name;
 
+    public Catalog(String code, String name) {
+        this.code = code;
+        this.name = name;
+    }
+
+    // Пустой конструктор для mapstruct
+    public Catalog() {
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Catalog catalog = (Catalog) o;
-        return Objects.equals(code, catalog.code) && Objects.equals(name, catalog.name);
+        return Objects.equals(id, catalog.id) && Objects.equals(code, catalog.code) && Objects.equals(name, catalog.name);
     }
 
     @Override

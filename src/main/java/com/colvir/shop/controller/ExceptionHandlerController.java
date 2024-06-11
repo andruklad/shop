@@ -3,6 +3,7 @@ package com.colvir.shop.controller;
 import com.colvir.shop.dto.ErrorResponse;
 import com.colvir.shop.expception.CatalogNotFoundException;
 import com.colvir.shop.expception.CategoryNotFoundException;
+import com.colvir.shop.expception.DatabaseException;
 import com.colvir.shop.expception.ProductNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -32,5 +33,9 @@ public class ExceptionHandlerController {
         return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
     }
 
-
+    @ExceptionHandler(DatabaseException.class)
+    public ResponseEntity<ErrorResponse> databaseException(Exception e) {
+        ErrorResponse errorResponse = new ErrorResponse(DATABASE_ERROR, e.getMessage());
+        return new ResponseEntity<>(errorResponse, HttpStatus.SEE_OTHER);
+    }
 }

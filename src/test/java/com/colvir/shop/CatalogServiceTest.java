@@ -1,9 +1,11 @@
 package com.colvir.shop;
 
+import com.colvir.shop.dto.CatalogRequest;
 import com.colvir.shop.dto.CatalogWithCategories;
 import com.colvir.shop.dto.CatalogsResponse;
 import com.colvir.shop.dto.CategoryWithProducts;
 import com.colvir.shop.expception.CatalogNotFoundException;
+import com.colvir.shop.mapper.CatalogsMapper;
 import com.colvir.shop.mapper.CatalogsMapperImpl;
 import com.colvir.shop.mapper.CategoriesByCatalogMapperImpl;
 import com.colvir.shop.mapper.ProductsByCategoryMapperImpl;
@@ -46,6 +48,9 @@ public class CatalogServiceTest {
     @Autowired
     CatalogService catalogService;
 
+    @Autowired
+    CatalogsMapper catalogsMapper;
+
     @MockBean
     CatalogRepository catalogRepository;
 
@@ -58,15 +63,16 @@ public class CatalogServiceTest {
     @Test
     void save_succes() {
         //Подготовка входных данных
+        CatalogRequest catalogRequest = new CatalogRequest("CatalogCode1", "CatalogName1");
+        Catalog catalog = catalogsMapper.catalogRequestToCatalog(catalogRequest);
 
         //Подготовка ожидаемого результата
-        Catalog catalog = new Catalog("CatalogCode1", "CatalogName1");
         Catalog expectedCatalog = catalog;
 
         when(catalogRepository.save(catalog)).thenReturn(catalog);
 
         //Начало теста
-        Catalog actualCatalog = catalogService.save(catalog);
+        Catalog actualCatalog = catalogService.save(catalogRequest);
         assertEquals(expectedCatalog, actualCatalog);
         verify(catalogRepository).save(any());
         verifyNoMoreInteractions(catalogRepository);

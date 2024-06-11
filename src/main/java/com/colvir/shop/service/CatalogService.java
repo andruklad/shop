@@ -1,5 +1,6 @@
 package com.colvir.shop.service;
 
+import com.colvir.shop.dto.CatalogRequest;
 import com.colvir.shop.dto.CatalogWithCategories;
 import com.colvir.shop.dto.CatalogsResponse;
 import com.colvir.shop.expception.CatalogNotFoundException;
@@ -22,7 +23,8 @@ public class CatalogService {
 
     private final CatalogsMapper catalogsMapper;
 
-    public Catalog save(Catalog catalog) {
+    public Catalog save(CatalogRequest catalogRequest) {
+        Catalog catalog = catalogsMapper.catalogRequestToCatalog(catalogRequest);
         return catalogRepository.save(catalog);
     }
 
@@ -50,8 +52,8 @@ public class CatalogService {
     }
 
     private void addCatalog(String catalogCode, String catalogName) {
-        Catalog catalog = new Catalog(catalogCode, catalogName);
-        save(catalog);
+        CatalogRequest catalogRequest = new CatalogRequest(catalogCode, catalogName);
+        save(catalogRequest);
     }
 
     public CatalogsResponse getAllCatalogs() {

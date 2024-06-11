@@ -34,11 +34,11 @@ public class ProductController {
     }
 
     @DeleteMapping("delete-by-article")
-    public ResponseEntity deleteByArticle(@RequestParam String article) {
+    public ResponseEntity<?> deleteByArticle(@RequestParam String article) {
 
         productService.deleteByArticle(article);
 
-        return new ResponseEntity(HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @GetMapping("get-by-max-price")
@@ -54,11 +54,11 @@ public class ProductController {
     }
 
     @GetMapping("load-test-data")
-    public ResponseEntity loadTestData() {
+    public ResponseEntity<?> loadTestData() {
 
         // Загрузка тестовых данных
         productService.loadTestData();
 
-        return new ResponseEntity(HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }
