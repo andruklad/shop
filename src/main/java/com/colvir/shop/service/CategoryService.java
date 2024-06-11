@@ -1,9 +1,10 @@
 package com.colvir.shop.service;
 
 import com.colvir.shop.dto.CategoriesByCatalogResponse;
+import com.colvir.shop.dto.CategoryRequest;
 import com.colvir.shop.dto.CategoryWithProducts;
 import com.colvir.shop.expception.CategoryNotFoundException;
-import com.colvir.shop.mapper.CategoriesByCatalogMapper;
+import com.colvir.shop.mapper.CategoriesMapper;
 import com.colvir.shop.model.Category;
 import com.colvir.shop.repository.CategoryRepository;
 import lombok.RequiredArgsConstructor;
@@ -20,9 +21,10 @@ public class CategoryService {
 
     private final ProductService productService;
 
-    private final CategoriesByCatalogMapper categoriesByCatalogMapper;
+    private final CategoriesMapper categoriesMapper;
 
-    public Category save(Category category) {
+    public Category save(CategoryRequest categoryRequest) {
+        Category category = categoriesMapper.categoryRequestToCategory(categoryRequest);
         return categoryRepository.save(category);
     }
 
@@ -66,12 +68,12 @@ public class CategoryService {
                 .collect(Collectors.toSet());
 
         // Маппинг в объект-ответ
-        return categoriesByCatalogMapper.categoriesToCategoriesByCatalogResponse(categoriesWithProducts);
+        return categoriesMapper.categoriesToCategoriesByCatalogResponse(categoriesWithProducts);
     }
 
     private void addCategory(String categoryCode, String categoryName, String catalogCode) {
-        Category category = new Category(categoryCode, categoryName, catalogCode);
-        save(category);
+        CategoryRequest categoryRequest = new CategoryRequest(categoryCode, categoryName, catalogCode);
+        save(categoryRequest);
     }
 
     public void loadTestData() {

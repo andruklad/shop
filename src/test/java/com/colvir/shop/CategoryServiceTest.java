@@ -1,9 +1,11 @@
 package com.colvir.shop;
 
 import com.colvir.shop.dto.CategoriesByCatalogResponse;
+import com.colvir.shop.dto.CategoryRequest;
 import com.colvir.shop.dto.CategoryWithProducts;
 import com.colvir.shop.expception.CategoryNotFoundException;
-import com.colvir.shop.mapper.CategoriesByCatalogMapperImpl;
+import com.colvir.shop.mapper.CategoriesMapper;
+import com.colvir.shop.mapper.CategoriesMapperImpl;
 import com.colvir.shop.mapper.ProductsByCategoryMapperImpl;
 import com.colvir.shop.model.Category;
 import com.colvir.shop.model.Product;
@@ -31,13 +33,16 @@ import static org.mockito.Mockito.*;
 @ContextConfiguration(classes = {
         CategoryService.class,
         ProductService.class,
-        CategoriesByCatalogMapperImpl.class,
+        CategoriesMapperImpl.class,
         ProductsByCategoryMapperImpl.class
 })
 public class CategoryServiceTest {
 
     @Autowired
     CategoryService categoryService;
+
+    @Autowired
+    CategoriesMapper categoriesMapper;
 
     @MockBean
     CategoryRepository categoryRepository;
@@ -51,7 +56,8 @@ public class CategoryServiceTest {
     @Test
     void save_success() {
         //Подготовка входных данных
-        Category category = new Category("CategoryCode1", "CategoryName1", "CatalogCode1");
+        CategoryRequest categoryRequest = new CategoryRequest("CategoryCode1", "CategoryName1", "CatalogCode1");
+        Category category = categoriesMapper.categoryRequestToCategory(categoryRequest);
 
         //Подготовка ожидаемого результата
         Category expectedCategory = category;
@@ -59,7 +65,7 @@ public class CategoryServiceTest {
         when(categoryRepository.save(category)).thenReturn(category);
 
         //Начало теста
-        Category actualCategory = categoryService.save(category);
+        Category actualCategory = categoryService.save(categoryRequest);
         assertEquals(expectedCategory, actualCategory);
         verify(categoryRepository).save(any());
         verifyNoMoreInteractions(categoryRepository);
@@ -129,9 +135,7 @@ public class CategoryServiceTest {
         when(categoryRepository.getByCode(code)).thenReturn(category);
 
         // Начало теста
-        categoryService.save(category);
         categoryService.deleteByCode(category.getCode());
-        verify(categoryRepository).save(category);
         verify(categoryRepository).getByCode(code);
         verify(categoryRepository).deleteByCode(category.getCode());
         verifyNoMoreInteractions(categoryRepository);

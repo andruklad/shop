@@ -7,7 +7,7 @@ import com.colvir.shop.dto.CategoryWithProducts;
 import com.colvir.shop.expception.CatalogNotFoundException;
 import com.colvir.shop.mapper.CatalogsMapper;
 import com.colvir.shop.mapper.CatalogsMapperImpl;
-import com.colvir.shop.mapper.CategoriesByCatalogMapperImpl;
+import com.colvir.shop.mapper.CategoriesMapperImpl;
 import com.colvir.shop.mapper.ProductsByCategoryMapperImpl;
 import com.colvir.shop.model.Catalog;
 import com.colvir.shop.model.Category;
@@ -40,7 +40,7 @@ import static org.mockito.Mockito.*;
         CategoryService.class,
         ProductService.class,
         CatalogsMapperImpl.class,
-        CategoriesByCatalogMapperImpl.class,
+        CategoriesMapperImpl.class,
         ProductsByCategoryMapperImpl.class
 })
 public class CatalogServiceTest {

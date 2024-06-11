@@ -18,6 +18,7 @@ public class CatalogController {
 
     @PostMapping("save")
     public Catalog save(@RequestBody CatalogRequest catalogRequest) {
+
         return catalogService.save(catalogRequest);
     }
 

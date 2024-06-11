@@ -1,6 +1,7 @@
 package com.colvir.shop.controller;
 
 import com.colvir.shop.dto.CategoriesByCatalogResponse;
+import com.colvir.shop.dto.CategoryRequest;
 import com.colvir.shop.model.Category;
 import com.colvir.shop.service.CategoryService;
 import lombok.RequiredArgsConstructor;
@@ -16,9 +17,9 @@ public class CategoryController {
     private final CategoryService categoryService;
 
     @PostMapping("save")
-    public Category save(@RequestBody Category category) {
+    public Category save(@RequestBody CategoryRequest categoryRequest) {
 
-        return categoryService.save(category);
+        return categoryService.save(categoryRequest);
     }
 
     @GetMapping("get-by-code")
