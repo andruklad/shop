@@ -3,11 +3,13 @@ package com.colvir.shop.model;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.Objects;
 
 @Data
 @AllArgsConstructor
+@NoArgsConstructor
 @Table(name = "categories")
 @Entity
 public class Category {
@@ -23,10 +25,6 @@ public class Category {
 
     @Column(name = "catalog_id")
     private Integer catalogId;
-
-    // Пустой конструктор для mapstruct
-    public Category() {
-    }
 
     @Override
     public boolean equals(Object o) {

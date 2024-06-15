@@ -3,16 +3,14 @@ package com.colvir.shop.repository.impl;
 import com.colvir.shop.model.Category;
 import com.colvir.shop.repository.CategoryRepository;
 import jakarta.transaction.Transactional;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
 
-import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
-@Getter
 @Transactional
 @RequiredArgsConstructor
 public class CategoryRepositoryPostgresImpl implements CategoryRepository {
@@ -20,8 +18,6 @@ public class CategoryRepositoryPostgresImpl implements CategoryRepository {
 
     // Для Hibernate
     private final SessionFactory sessionFactory;
-
-    private final Set<Category> categories = new HashSet<>();
 
     public Category save(Category category) {
 
@@ -58,5 +54,17 @@ public class CategoryRepositoryPostgresImpl implements CategoryRepository {
         Query query = session.createQuery("delete Category where code = :categoryCode");
         query.setParameter("categoryCode", categoryCode);
         query.executeUpdate();
+    }
+
+    @Override
+    public Set<Category> getCategories() {
+
+        Session session = sessionFactory.getCurrentSession();
+        Query<Category> query = session.createQuery("select c from Category c", Category.class);
+        Set<Category> categories = query.getResultList().stream()
+                .map(category -> new Category(category.getId(), category.getCode(), category.getName(), category.getCatalogId()))
+                .collect(Collectors.toSet());
+
+        return categories;
     }
 }
