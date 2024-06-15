@@ -9,6 +9,8 @@ import java.util.Objects;
 @AllArgsConstructor
 public class Catalog {
 
+    private Integer id;
+
     private String code;
 
     private String name;
@@ -32,6 +34,6 @@ public class Catalog {
 
     @Override
     public int hashCode() {
-        return Objects.hash(code, name);
+        return Objects.hash(id, code, name);
     }
 }
