@@ -14,6 +14,7 @@ import java.util.Set;
 public interface CategoriesMapper {
 
     @Mapping(target = "id", ignore = true)
+    @Mapping(target = "catalogId", ignore = true)
     Category categoryRequestToCategory(CategoryRequest categoryRequest);
 
     default CategoriesByCatalogResponse categoriesToCategoriesByCatalogResponse(Set<CategoryWithProducts> categoriesWithProducts) {

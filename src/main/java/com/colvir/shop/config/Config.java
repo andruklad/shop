@@ -5,6 +5,7 @@ import com.colvir.shop.repository.CategoryRepository;
 import com.colvir.shop.repository.impl.CatalogRepositoryMemoryImpl;
 import com.colvir.shop.repository.impl.CatalogRepositoryPostgresImpl;
 import com.colvir.shop.repository.impl.CategoryRepositoryMemoryImpl;
+import com.colvir.shop.repository.impl.CategoryRepositoryPostgresImpl;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -64,6 +65,7 @@ public class Config {
 
     @Bean
     public CatalogRepository getCatalogRepository () {
+
         return switch (repositoryMode) {
             case "memory" -> new CatalogRepositoryMemoryImpl();
             case "postgres" -> new CatalogRepositoryPostgresImpl(getJdbcTemplate());
@@ -74,11 +76,38 @@ public class Config {
 
     @Bean
     public CategoryRepository getCategoryRepository () {
+
         return switch (repositoryMode) {
             case "memory" -> new CategoryRepositoryMemoryImpl();
-//            case "postgres" -> new CategoryRepositoryPostgresImpl(getJdbcTemplate()); TODO. Реализовать имплементацию
+            case "postgres" -> new CategoryRepositoryPostgresImpl(getLocalSessionFactoryBean().getObject());
             default ->
                     throw new RuntimeException(String.format("Режим репозитория %s не поддерживается.", repositoryMode));
         };
+    }
+
+    private Properties getHibernateProperties() {
+
+        Properties properties = new Properties();
+        properties.setProperty("hibernate.dialect", hibernateDialect);
+        properties.setProperty("hibernate.show_sql", hibernateShowSql);
+        return properties;
+    }
+
+    @Bean
+    public LocalSessionFactoryBean getLocalSessionFactoryBean() {
+
+        LocalSessionFactoryBean localSessionFactoryBean = new LocalSessionFactoryBean();
+        localSessionFactoryBean.setDataSource(getDataSource());
+        localSessionFactoryBean.setHibernateProperties(getHibernateProperties());
+        localSessionFactoryBean.setPackagesToScan("com.colvir.shop.model");
+        return localSessionFactoryBean;
+    }
+
+    @Bean
+    public PlatformTransactionManager getPlatformTransactionManager() {
+
+        HibernateTransactionManager hibernateTransactionManager = new HibernateTransactionManager();
+        hibernateTransactionManager.setSessionFactory(getLocalSessionFactoryBean().getObject());
+        return hibernateTransactionManager;
     }
 }

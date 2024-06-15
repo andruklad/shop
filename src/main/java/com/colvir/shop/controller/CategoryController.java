@@ -29,8 +29,8 @@ public class CategoryController {
     }
 
     @PutMapping("update")
-    public Category update(@RequestBody Category category) {
-        return categoryService.update(category);
+    public Category update(@RequestBody CategoryRequest categoryRequest) {
+        return categoryService.update(categoryRequest);
     }
 
     @DeleteMapping("delete-by-code")

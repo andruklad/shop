@@ -3,9 +3,12 @@ package com.colvir.shop.service;
 import com.colvir.shop.dto.CategoriesByCatalogResponse;
 import com.colvir.shop.dto.CategoryRequest;
 import com.colvir.shop.dto.CategoryWithProducts;
+import com.colvir.shop.expception.CatalogNotFoundException;
 import com.colvir.shop.expception.CategoryNotFoundException;
 import com.colvir.shop.mapper.CategoriesMapper;
+import com.colvir.shop.model.Catalog;
 import com.colvir.shop.model.Category;
+import com.colvir.shop.repository.CatalogRepository;
 import com.colvir.shop.repository.CategoryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -19,12 +22,17 @@ public class CategoryService {
 
     private final CategoryRepository categoryRepository;
 
+    private final CatalogRepository catalogRepository;
+
     private final ProductService productService;
 
     private final CategoriesMapper categoriesMapper;
 
     public Category save(CategoryRequest categoryRequest) {
+
         Category category = categoriesMapper.categoryRequestToCategory(categoryRequest);
+        fillCatalogIdByCatalogCode(category, categoryRequest.getCatalogCode());
+
         return categoryRepository.save(category);
     }
 
@@ -39,12 +47,36 @@ public class CategoryService {
         return category;
     }
 
-    public Category update(Category categoryForUpdate) {
+    private void fillCategoryIdByCode(Category category) {
 
-        // Проверка наличия, чтобы сообщить об ошибке в случае отсутствия
-        getByCode(categoryForUpdate.getCode());
+        Category categoryByCode = getByCode(category.getCode());
+        category.setId(categoryByCode.getId());
+    }
 
-        return categoryRepository.update(categoryForUpdate);
+    private Integer getCatalogIdByCatalogCode(String catalogCode) {
+
+        Catalog catalog = catalogRepository.getByCode(catalogCode);
+
+        if (catalog == null) {
+            throw new CatalogNotFoundException(String.format("Каталог с кодом %s не найден", catalogCode));
+        }
+
+        return catalog.getId();
+    }
+
+    private void fillCatalogIdByCatalogCode(Category category, String catalogCode) {
+
+        Integer catalogId = getCatalogIdByCatalogCode(catalogCode);
+        category.setCatalogId(catalogId);
+    }
+
+    public Category update(CategoryRequest categoryRequest) {
+
+        Category category = categoriesMapper.categoryRequestToCategory(categoryRequest);
+        fillCategoryIdByCode(category);
+        fillCatalogIdByCatalogCode(category, categoryRequest.getCatalogCode());
+
+        return categoryRepository.update(category);
     }
 
     public void deleteByCode(String categoryCode) {
@@ -57,9 +89,10 @@ public class CategoryService {
 
     public CategoriesByCatalogResponse getAllCategoriesByCatalog(String catalogCode) {
 
+        Integer catalogId = getCatalogIdByCatalogCode(catalogCode);
         // Отбор категорий из указанного каталога
         Set<Category> categories = categoryRepository.getCategories().stream()
-                .filter(category -> category.getCatalogCode().equals(catalogCode))
+                .filter(category -> category.getCatalogId().equals(catalogId))
                 .collect(Collectors.toSet());
 
         // Заполнение продуктов каждой категории для объекта-ответа

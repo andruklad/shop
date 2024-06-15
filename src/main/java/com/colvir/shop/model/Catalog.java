@@ -15,11 +15,6 @@ public class Catalog {
 
     private String name;
 
-    public Catalog(String code, String name) {
-        this.code = code;
-        this.name = name;
-    }
-
     // Пустой конструктор для mapstruct
     public Catalog() {
     }

@@ -16,18 +16,18 @@ import java.util.Set;
 @Getter
 @RequiredArgsConstructor
 public class CatalogRepositoryPostgresImpl implements CatalogRepository {
-    // TODO. Пока это копия CatalogRepositoryMemoryImpl. Необходимо адаптировать на работу с БД
+    // Реализация с использованием JdbcTemplate
 
     private final JdbcTemplate jdbcTemplate;
 
     private final BeanPropertyRowMapper<Catalog> beanPropertyRowMapper = new BeanPropertyRowMapper<>(Catalog.class);
 
-    private Long generateId() {
+    private Integer generateId() {
 
         String statementString = "SELECT nextval('sequence_catalog_id')";
         SqlRowSet sqlRowSet = jdbcTemplate.queryForRowSet(statementString);
         sqlRowSet.next();
-        return sqlRowSet.getLong(1);
+        return sqlRowSet.getInt(1);
     }
 
     public Catalog save(Catalog catalog) {

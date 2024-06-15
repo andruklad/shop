@@ -39,10 +39,13 @@ public class CatalogService {
         return catalog;
     }
 
-    public Catalog update(Catalog catalogForUpdate) {
+    public Catalog update(CatalogRequest catalogRequest) {
 
-        // Проверка наличия, чтобы сообщить об ошибке в случае отсутствия
-        getByCode(catalogForUpdate.getCode());
+        // За одно, проверка наличия, чтобы сообщить об ошибке в случае отсутствия
+        Catalog catalogByCode = getByCode(catalogRequest.getCode());
+        Catalog catalogForUpdate = catalogsMapper.catalogRequestToCatalog(catalogRequest);
+        // Преобразование кода в идентификатор
+        catalogForUpdate.setId(catalogByCode.getId());
 
         return catalogRepository.update(catalogForUpdate);
     }

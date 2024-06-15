@@ -29,9 +29,9 @@ public class CatalogController {
     }
 
     @PutMapping("update")
-    public Catalog update(@RequestBody Catalog catalog) {
+    public Catalog update(@RequestBody CatalogRequest catalogRequest) {
 
-        return catalogService.update(catalog);
+        return catalogService.update(catalogRequest);
     }
 
     @DeleteMapping("delete-by-code")

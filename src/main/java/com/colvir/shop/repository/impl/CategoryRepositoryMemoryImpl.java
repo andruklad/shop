@@ -5,6 +5,7 @@ import com.colvir.shop.repository.CategoryRepository;
 import lombok.Getter;
 
 import java.util.HashSet;
+import java.util.Random;
 import java.util.Set;
 
 @Getter
@@ -12,8 +13,14 @@ public class CategoryRepositoryMemoryImpl implements CategoryRepository {
 
     private final Set<Category> categories = new HashSet<>();
 
+    private final Random random = new Random();
+
     public Category save(Category category) {
 
+        if (category.getId() == null) {
+
+            category.setId(random.nextInt());
+        }
         categories.add(category);
         return category;
     }
@@ -32,7 +39,7 @@ public class CategoryRepositoryMemoryImpl implements CategoryRepository {
 
         if (category != null) {
             category.setName(categoryForUpdate.getName());
-            category.setCatalogCode(categoryForUpdate.getCatalogCode());
+            category.setCatalogId(categoryForUpdate.getCatalogId());
         }
 
         return category;
