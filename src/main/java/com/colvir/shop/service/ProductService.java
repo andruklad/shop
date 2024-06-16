@@ -1,9 +1,13 @@
 package com.colvir.shop.service;
 
+import com.colvir.shop.dto.ProductRequest;
 import com.colvir.shop.dto.ProductsByCategoryResponse;
+import com.colvir.shop.expception.CategoryNotFoundException;
 import com.colvir.shop.expception.ProductNotFoundException;
-import com.colvir.shop.mapper.ProductsByCategoryMapper;
+import com.colvir.shop.mapper.ProductsMapper;
+import com.colvir.shop.model.Category;
 import com.colvir.shop.model.Product;
+import com.colvir.shop.repository.CategoryRepository;
 import com.colvir.shop.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -19,9 +23,38 @@ public class ProductService {
 
     private final ProductRepository productRepository;
 
-    private final ProductsByCategoryMapper productsByCategoryMapper;
+    private final CategoryRepository categoryRepository;
 
-    public Product save(Product product) {
+    private final ProductsMapper productsMapper;
+
+    private Integer getCategoryIdByCategoryCode(String categoryCode) {
+
+        Category category = categoryRepository.getByCode(categoryCode);
+
+        if (category == null) {
+            throw new CategoryNotFoundException(String.format("Категория с кодом %s не найдена", categoryCode));
+        }
+
+        return category.getId();
+    }
+
+    private void fillCategoryIdByCategoryCode(Product product, String categoryCode) {
+
+        Integer categoryId = getCategoryIdByCategoryCode(categoryCode);
+        product.setCategoryId(categoryId);
+    }
+
+    private void fillProductIdByCode(Product product) {
+
+        Product productByArticle = getByArticle(product.getArticle());
+        product.setId(productByArticle.getId());
+    }
+
+    public Product save(ProductRequest productRequest) {
+
+        Product product = productsMapper.productRequestToProduct(productRequest);
+        fillCategoryIdByCategoryCode(product, productRequest.getCategoryCode());
+
         return productRepository.save(product);
     }
 
@@ -36,12 +69,13 @@ public class ProductService {
         return product;
     }
 
-    public Product update(Product productForUpdate) {
+    public Product update(ProductRequest productRequest) {
 
-        // Проверка наличия, чтобы сообщить об ошибке в случае отсутствия
-        getByArticle(productForUpdate.getArticle());
+        Product product = productsMapper.productRequestToProduct(productRequest);
+        fillProductIdByCode(product);
+        fillCategoryIdByCategoryCode(product, productRequest.getCategoryCode());
 
-        return productRepository.update(productForUpdate);
+        return productRepository.update(product);
     }
 
     public void deleteByArticle(String article) {
@@ -59,16 +93,18 @@ public class ProductService {
     }
 
     public ProductsByCategoryResponse getAllProductsByCategory(String categoryCode) {
+
+        Integer categoryId = getCategoryIdByCategoryCode(categoryCode);
         Set<Product> products = productRepository.getProducts().stream()
-                .filter(product -> product.getCategoryCode().equals(categoryCode))
+                .filter(product -> product.getCategoryId().equals(categoryId))
                 .collect(Collectors.toSet());
 
-        return productsByCategoryMapper.productsToProductsByCategoryResponse(products);
+        return productsMapper.productsToProductsByCategoryResponse(products);
     }
 
     private void addProduct(String article, String name, Double price, String categoryCode) {
-        Product product = new Product(article, name, price, categoryCode);
-        save(product);
+        ProductRequest productRequest = new ProductRequest(article, name, price, categoryCode);
+        save(productRequest);
     }
 
     public void loadTestData() {

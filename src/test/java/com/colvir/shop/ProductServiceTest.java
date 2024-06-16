@@ -1,9 +1,13 @@
 package com.colvir.shop;
 
+import com.colvir.shop.dto.ProductRequest;
 import com.colvir.shop.dto.ProductsByCategoryResponse;
 import com.colvir.shop.expception.ProductNotFoundException;
-import com.colvir.shop.mapper.ProductsByCategoryMapper;
+import com.colvir.shop.mapper.ProductsMapper;
+import com.colvir.shop.mapper.ProductsMapperImpl;
+import com.colvir.shop.model.Category;
 import com.colvir.shop.model.Product;
+import com.colvir.shop.repository.CategoryRepository;
 import com.colvir.shop.repository.ProductRepository;
 import com.colvir.shop.service.ProductService;
 import org.junit.jupiter.api.Test;
@@ -24,7 +28,8 @@ import static org.mockito.Mockito.*;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {
-    ProductService.class
+    ProductService.class,
+    ProductsMapperImpl.class
 })
 public class ProductServiceTest {
 
@@ -35,19 +40,26 @@ public class ProductServiceTest {
     ProductRepository productRepository;
 
     @MockBean
-    ProductsByCategoryMapper productsByCategoryMapper;
+    CategoryRepository categoryRepository;
+
+    @Autowired
+    ProductsMapper productsMapper;
 
     @Test void save_success() {
         //Подготовка входных данных
-        Product product = new Product("001", "ProductName1", 10.0, "CategoryCode1");
+        ProductRequest productRequest = new ProductRequest("001", "ProductName1", 10.0, "CategoryCode1");
+        Product product = productsMapper.productRequestToProduct(productRequest);
+        product.setCategoryId(1);
 
         //Подготовка ожидаемого результата
         Product expectedProduct = product;
+        Category category = new Category(1, "CategoryCode1", "CategoryName1", 1);
 
         when(productRepository.save(product)).thenReturn(product);
+        when(categoryRepository.getByCode("CategoryCode1")).thenReturn(category);
 
         //Начало теста
-        Product actualProduct = productService.save(product);
+        Product actualProduct = productService.save(productRequest);
         assertEquals(expectedProduct, actualProduct);
         verify(productRepository).save(any());
         verifyNoMoreInteractions(productRepository);
@@ -55,7 +67,7 @@ public class ProductServiceTest {
 
     @Test void getByArticle_success() {
         // Подготовка входных данных
-        Product product = new Product("001", "ProductName1", 10.0, "CategoryCode1");
+        Product product = new Product(1, "001", "ProductName1", 10.0, 1);
 
         // Подготовка ожидаемого результата
         Product expectedProduct = product;
@@ -64,17 +76,15 @@ public class ProductServiceTest {
         when(productRepository.getByArticle(product.getArticle())).thenReturn(product);
 
         // Начало теста
-        productService.save(product);
         Product actualProduct = productService.getByArticle(product.getArticle());
         assertEquals(expectedProduct, actualProduct);
-        verify(productRepository).save(product);
         verify(productRepository).getByArticle(product.getArticle());
         verifyNoMoreInteractions(productRepository);
     }
 
     @Test void getByArticle_withException() {
         // Подготовка входных данных
-        Product product = new Product("001", "ProductName1", 10.0, "CategoryCode1");
+        Product product = new Product(1, "001", "ProductName1", 10.0, 1);
 
         // Подготовка ожидаемого результата
         String article = product.getArticle();
@@ -91,16 +101,20 @@ public class ProductServiceTest {
 
     @Test void update_success() {
         //Подготовка входных данных
-        Product product = new Product("001", "ProductName1", 10.0, "CategoryCode1");
+        ProductRequest productRequest = new ProductRequest("001", "ProductName2", 20.0, "CategoryCode2");
+        Product productFromRequest = new Product(1, "001", "ProductName2", 20.0, 2);
+        Product productFromRepository = new Product(1, "001", "ProductName1", 10.0, 1);
 
         //Подготовка ожидаемого результата
-        Product expectedProduct = new Product("001", "ProductName2", 20.0, "CategoryCode1");
+        Product expectedProduct = productFromRequest;
+        Category expectedCategory = new Category(2, "CategoryCode2", "CategoryName2", 2);
 
-        when(productRepository.getByArticle(product.getArticle())).thenReturn(expectedProduct);
-        when(productRepository.update(product)).thenReturn(expectedProduct);
+        when(productRepository.getByArticle(productFromRequest.getArticle())).thenReturn(productFromRepository);
+        when(productRepository.update(productFromRequest)).thenReturn(expectedProduct);
+        when(categoryRepository.getByCode("CategoryCode2")).thenReturn(expectedCategory);
 
         //Начало теста
-        Product actualProduct = productService.update(product);
+        Product actualProduct = productService.update(productRequest);
         assertEquals(expectedProduct, actualProduct);
         verify(productRepository).getByArticle(any());
         verify(productRepository).update(any());
@@ -109,7 +123,7 @@ public class ProductServiceTest {
 
     @Test void deleteByArticle_success() {
         // Подготовка входных данных
-        Product product = new Product("001", "ProductName1", 10.0, "CategoryCode1");
+        Product product = new Product(1, "ProductCode1", "ProductName1", 10.0, 1);
 
         // Подготовка ожидаемого результата
         String article = product.getArticle();
@@ -117,9 +131,7 @@ public class ProductServiceTest {
         when(productRepository.getByArticle(article)).thenReturn(product);
 
         // Начало теста
-        productService.save(product);
         productService.deleteByArticle(product.getArticle());
-        verify(productRepository).save(product);
         verify(productRepository).getByArticle(article);
         verify(productRepository).deleteByArticle(product.getArticle());
         verifyNoMoreInteractions(productRepository);
@@ -127,9 +139,9 @@ public class ProductServiceTest {
 
     @Test void getByMaxPrice_success() {
         // Подготовка входных данных
-        Product product1 = new Product("001", "ProductName1", 10.0, "CategoryCode1");
-        Product product2 = new Product("002", "ProductName2", 20.0, "CategoryCode1");
-        Product product3 = new Product("003", "ProductName3", 30.0, "CategoryCode1");
+        Product product1 = new Product(1, "001", "ProductName1", 10.0, 1);
+        Product product2 = new Product(2, "002", "ProductName2", 20.0, 1);
+        Product product3 = new Product(3, "003", "ProductName3", 30.0, 1);
 
         // Подготовка ожидаемого результата
         Product expectedProduct = product3;
@@ -145,22 +157,22 @@ public class ProductServiceTest {
 
     @Test void getAllProductsByCategory_success() {
         // Подготовка входных данных
-        Product product1 = new Product("001", "ProductName1", 10.0, "CategoryCode1");
-        Product product2 = new Product("002", "ProductName2", 20.0, "CategoryCode1");
-        Product product3 = new Product("003", "ProductName3", 30.0, "CategoryCode2");
+        Product product1 = new Product(1, "001", "ProductName1", 10.0, 1);
+        Product product2 = new Product(2, "002", "ProductName2", 20.0, 1);
+        Product product3 = new Product(3, "003", "ProductName3", 30.0, 2);
 
         // Подготовка ожидаемого результата
         Set<Product> expectedProducts = new HashSet<>(Arrays.asList(product1, product2));
         ProductsByCategoryResponse expectedProductsByCategoryResponse = new ProductsByCategoryResponse(expectedProducts);
+        Category category = new Category(1, "CategoryCode1", "CategoryName1", 1);
 
         when(productRepository.getProducts()).thenReturn(new HashSet<>(Arrays.asList(product1, product2, product3)));
-        when(productsByCategoryMapper.productsToProductsByCategoryResponse(expectedProducts)).thenReturn(expectedProductsByCategoryResponse);
+        when(categoryRepository.getByCode(category.getCode())).thenReturn(category);
 
         // Начало теста
-        ProductsByCategoryResponse actualProductsByCategoryResponse = productService.getAllProductsByCategory("CategoryCode1");
+        ProductsByCategoryResponse actualProductsByCategoryResponse = productService.getAllProductsByCategory(category.getCode());
         assertEquals(expectedProductsByCategoryResponse, actualProductsByCategoryResponse);
         verify(productRepository).getProducts();
         verifyNoMoreInteractions(productRepository);
     }
-
 }

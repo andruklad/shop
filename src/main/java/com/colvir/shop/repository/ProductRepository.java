@@ -5,6 +5,7 @@ import lombok.Getter;
 import org.springframework.stereotype.Repository;
 
 import java.util.HashSet;
+import java.util.Random;
 import java.util.Set;
 
 @Repository
@@ -13,8 +14,14 @@ public class ProductRepository {
 
     private final Set<Product> products = new HashSet<>();
 
+    private final Random random = new Random();
+
     public Product save(Product product) {
 
+        if (product.getId() == null) {
+
+            product.setId(random.nextInt());
+        }
         products.add(product);
         return product;
     }
@@ -34,7 +41,7 @@ public class ProductRepository {
         if (product != null) {
             product.setName(productForUpdate.getName());
             product.setPrice(productForUpdate.getPrice());
-            product.setCategoryCode(productForUpdate.getCategoryCode());
+            product.setCategoryId(productForUpdate.getCategoryId());
         }
 
         return product;

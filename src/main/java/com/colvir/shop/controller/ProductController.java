@@ -1,5 +1,6 @@
 package com.colvir.shop.controller;
 
+import com.colvir.shop.dto.ProductRequest;
 import com.colvir.shop.dto.ProductsByCategoryResponse;
 import com.colvir.shop.model.Product;
 import com.colvir.shop.service.ProductService;
@@ -16,9 +17,9 @@ public class ProductController {
     private final ProductService productService;
 
     @PostMapping("save")
-    public Product save(@RequestBody Product product) {
+    public Product save(@RequestBody ProductRequest productRequest) {
 
-        return productService.save(product);
+        return productService.save(productRequest);
     }
 
     @GetMapping("get-by-article")
@@ -28,9 +29,9 @@ public class ProductController {
     }
 
     @PutMapping("update")
-    public Product update(@RequestBody Product product) {
+    public Product update(@RequestBody ProductRequest productRequest) {
 
-        return productService.update(product);
+        return productService.update(productRequest);
     }
 
     @DeleteMapping("delete-by-article")
