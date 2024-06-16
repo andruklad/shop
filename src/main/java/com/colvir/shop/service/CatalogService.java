@@ -51,6 +51,9 @@ public class CatalogService {
     }
 
     public void deleteByCode(String catalogCode) {
+
+        // Проверка наличия, чтобы сообщить об ошибке в случае отсутствия
+        getByCode(catalogCode);
         catalogRepository.deleteByCode(catalogCode);
     }
 
