@@ -32,7 +32,8 @@ public class CategoryRepositoryPostgresImpl implements CategoryRepository {
         Session session = sessionFactory.getCurrentSession();
         Query<Category> query = session.createQuery("select c from Category c where c.code = :categoryCode", Category.class);
         query.setParameter("categoryCode", categoryCode);
-        Category category = query.getSingleResult();
+        Category category = query.getResultList().stream()
+                .findFirst().orElse(null);
 
         return category;
     }
@@ -56,7 +57,6 @@ public class CategoryRepositoryPostgresImpl implements CategoryRepository {
         query.executeUpdate();
     }
 
-    @Override
     public Set<Category> getCategories() {
 
         Session session = sessionFactory.getCurrentSession();
