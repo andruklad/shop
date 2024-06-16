@@ -88,8 +88,7 @@ public class Config {
 
         return switch (repositoryMode) {
             case "memory" -> new ProductRepositoryMemoryImpl();
-            // TODO. Расскомментировать после реализации
-//            case "postgres" -> new ProductRepositoryPostgresImpl(getLocalSessionFactoryBean().getObject());
+            case "postgres" -> new ProductRepositoryPostgresImpl(getLocalSessionFactoryBean().getObject());
             default ->
                     throw new RuntimeException(String.format("Режим репозитория %s не поддерживается.", repositoryMode));
         };
