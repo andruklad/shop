@@ -2,10 +2,8 @@ package com.colvir.shop.config;
 
 import com.colvir.shop.repository.CatalogRepository;
 import com.colvir.shop.repository.CategoryRepository;
-import com.colvir.shop.repository.impl.CatalogRepositoryMemoryImpl;
-import com.colvir.shop.repository.impl.CatalogRepositoryPostgresImpl;
-import com.colvir.shop.repository.impl.CategoryRepositoryMemoryImpl;
-import com.colvir.shop.repository.impl.CategoryRepositoryPostgresImpl;
+import com.colvir.shop.repository.ProductRepository;
+import com.colvir.shop.repository.impl.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -80,6 +78,18 @@ public class Config {
         return switch (repositoryMode) {
             case "memory" -> new CategoryRepositoryMemoryImpl();
             case "postgres" -> new CategoryRepositoryPostgresImpl(getLocalSessionFactoryBean().getObject());
+            default ->
+                    throw new RuntimeException(String.format("Режим репозитория %s не поддерживается.", repositoryMode));
+        };
+    }
+
+    @Bean
+    public ProductRepository getProductRepository () {
+
+        return switch (repositoryMode) {
+            case "memory" -> new ProductRepositoryMemoryImpl();
+            // TODO. Расскомментировать после реализации
+//            case "postgres" -> new ProductRepositoryPostgresImpl(getLocalSessionFactoryBean().getObject());
             default ->
                     throw new RuntimeException(String.format("Режим репозитория %s не поддерживается.", repositoryMode));
         };
