@@ -1,12 +1,16 @@
 package com.colvir.shop;
 
 import com.colvir.shop.dto.CategoriesByCatalogResponse;
+import com.colvir.shop.dto.CategoryRequest;
 import com.colvir.shop.dto.CategoryWithProducts;
 import com.colvir.shop.expception.CategoryNotFoundException;
-import com.colvir.shop.mapper.CategoriesByCatalogMapperImpl;
-import com.colvir.shop.mapper.ProductsByCategoryMapperImpl;
+import com.colvir.shop.mapper.CategoriesMapper;
+import com.colvir.shop.mapper.CategoriesMapperImpl;
+import com.colvir.shop.mapper.ProductsMapperImpl;
+import com.colvir.shop.model.Catalog;
 import com.colvir.shop.model.Category;
 import com.colvir.shop.model.Product;
+import com.colvir.shop.repository.CatalogRepository;
 import com.colvir.shop.repository.CategoryRepository;
 import com.colvir.shop.repository.ProductRepository;
 import com.colvir.shop.service.CategoryService;
@@ -31,16 +35,22 @@ import static org.mockito.Mockito.*;
 @ContextConfiguration(classes = {
         CategoryService.class,
         ProductService.class,
-        CategoriesByCatalogMapperImpl.class,
-        ProductsByCategoryMapperImpl.class
+        CategoriesMapperImpl.class,
+        ProductsMapperImpl.class
 })
 public class CategoryServiceTest {
 
     @Autowired
     CategoryService categoryService;
 
+    @Autowired
+    CategoriesMapper categoriesMapper;
+
     @MockBean
     CategoryRepository categoryRepository;
+
+    @MockBean
+    CatalogRepository catalogRepository;
 
     @Autowired
     ProductService productService;
@@ -51,15 +61,19 @@ public class CategoryServiceTest {
     @Test
     void save_success() {
         //Подготовка входных данных
-        Category category = new Category("CategoryCode1", "CategoryName1", "CatalogCode1");
+        CategoryRequest categoryRequest = new CategoryRequest("CategoryCode1", "CategoryName1", "CatalogCode1");
+        Category category = categoriesMapper.categoryRequestToCategory(categoryRequest);
+        category.setCatalogId(1);
 
         //Подготовка ожидаемого результата
         Category expectedCategory = category;
+        Catalog catalog = new Catalog(1, "CatalogCode1", "CatalogName1");
 
         when(categoryRepository.save(category)).thenReturn(category);
+        when(catalogRepository.getByCode("CatalogCode1")).thenReturn(catalog);
 
         //Начало теста
-        Category actualCategory = categoryService.save(category);
+        Category actualCategory = categoryService.save(categoryRequest);
         assertEquals(expectedCategory, actualCategory);
         verify(categoryRepository).save(any());
         verifyNoMoreInteractions(categoryRepository);
@@ -68,7 +82,7 @@ public class CategoryServiceTest {
     @Test
     void getByCode_success() {
         // Подготовка входных данных
-        Category category = new Category("CategoryCode1", "CategoryName1", "CatalogCode1");
+        Category category = new Category(1, "CategoryCode1", "CategoryName1", 1);
 
         // Подготовка ожидаемого результата
         Category expectedCategory = category;
@@ -102,16 +116,20 @@ public class CategoryServiceTest {
     @Test
     void update_success() {
         //Подготовка входных данных
-        Category category = new Category("CategoryCode1", "CategoryName1", "CatalogCode1");
+        CategoryRequest categoryRequest = new CategoryRequest("CategoryCode1", "CategoryName2", "CatalogCode2");
+        Category categoryFromRequest = new Category(1, "CategoryCode1", "CategoryName2", 2);
+        Category categoryFromRepository = new Category(1, "CategoryCode1", "CategoryName1", 1);
 
         //Подготовка ожидаемого результата
-        Category expectedCategory = new Category("CategoryCode1", "CategoryName2", "CatalogCode2");
+        Category expectedCategory = categoryFromRequest;
+        Catalog expectedCatalog = new Catalog(2, "CatalogCode2", "CatalogName2");
 
-        when(categoryRepository.getByCode(category.getCode())).thenReturn(expectedCategory);
-        when(categoryRepository.update(category)).thenReturn(expectedCategory);
+        when(categoryRepository.getByCode(categoryRequest.getCode())).thenReturn(categoryFromRepository);
+        when(categoryRepository.update(categoryFromRequest)).thenReturn(expectedCategory);
+        when(catalogRepository.getByCode("CatalogCode2")).thenReturn(expectedCatalog);
 
         //Начало теста
-        Category actualProduct = categoryService.update(category);
+        Category actualProduct = categoryService.update(categoryRequest);
         assertEquals(expectedCategory, actualProduct);
         verify(categoryRepository).getByCode(any());
         verify(categoryRepository).update(any());
@@ -121,7 +139,7 @@ public class CategoryServiceTest {
     @Test
     void deleteByCode_success() {
         // Подготовка входных данных
-        Category category = new Category("CategoryCode1", "CategoryName1", "CatalogCode1");
+        Category category = new Category(1, "CategoryCode1", "CategoryName1", 1);
 
         // Подготовка ожидаемого результата
         String code = category.getCode();
@@ -129,9 +147,7 @@ public class CategoryServiceTest {
         when(categoryRepository.getByCode(code)).thenReturn(category);
 
         // Начало теста
-        categoryService.save(category);
         categoryService.deleteByCode(category.getCode());
-        verify(categoryRepository).save(category);
         verify(categoryRepository).getByCode(code);
         verify(categoryRepository).deleteByCode(category.getCode());
         verifyNoMoreInteractions(categoryRepository);
@@ -141,15 +157,16 @@ public class CategoryServiceTest {
     void getAllCategoriesByCatalog_success() {
         // Подготовка входных данных
         String catalogCode = "CatalogCode1";
+        Catalog catalog = new Catalog(1, catalogCode, "CatalogName1");
 
         // Подготовка ожидаемого результата
-        Category category1 = new Category("CategoryCode1", "CategoryName1", "CatalogCode1");
-        Category category2 = new Category("CategoryCode2", "CategoryName2", "CatalogCode1");
-        Category category3 = new Category("CategoryCode3", "CategoryName3", "CatalogCode2");
+        Category category1 = new Category(1, "CategoryCode1", "CategoryName1", 1);
+        Category category2 = new Category(2, "CategoryCode2", "CategoryName2", 1);
+        Category category3 = new Category(3, "CategoryCode3", "CategoryName3", 2);
 
-        Product product1 = new Product("001", "ProductName1", 10.0, "CategoryCode1");
-        Product product2 = new Product("002", "ProductName2", 20.0, "CategoryCode1");
-        Product product3 = new Product("003", "ProductName3", 30.0, "CategoryCode2");
+        Product product1 = new Product(1, "001", "ProductName1", 10.0, 1);
+        Product product2 = new Product(2, "002", "ProductName2", 20.0, 1);
+        Product product3 = new Product(3, "003", "ProductName3", 30.0, 2);
 
         CategoryWithProducts categoryWithProducts1 = new CategoryWithProducts(category1, new HashSet<>(Arrays.asList(product1, product2)));
         CategoryWithProducts categoryWithProducts2 = new CategoryWithProducts(category2, new HashSet<>(List.of(product3)));
@@ -158,11 +175,16 @@ public class CategoryServiceTest {
 
         when(categoryRepository.getCategories()).thenReturn(new HashSet<>(Arrays.asList(category1, category2, category3)));
         when(productRepository.getProducts()).thenReturn(new HashSet<>(Arrays.asList(product1, product2, product3)));
+        when(catalogRepository.getByCode("CatalogCode1")).thenReturn(catalog);
+        when(categoryRepository.getByCode(category1.getCode())).thenReturn(category1);
+        when(categoryRepository.getByCode(category2.getCode())).thenReturn(category2);
 
         // Начало теста
         CategoriesByCatalogResponse actualCategoriesByCatalogResponse = categoryService.getAllCategoriesByCatalog(catalogCode);
         assertEquals(expectedCategoriesByCatalogResponse, actualCategoriesByCatalogResponse);
         verify(categoryRepository).getCategories();
+        verify(categoryRepository).getByCode(category1.getCode());
+        verify(categoryRepository).getByCode(category2.getCode());
         verifyNoMoreInteractions(categoryRepository);
     }
 }

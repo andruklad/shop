@@ -1,5 +1,6 @@
 package com.colvir.shop.controller;
 
+import com.colvir.shop.dto.CatalogRequest;
 import com.colvir.shop.dto.CatalogsResponse;
 import com.colvir.shop.model.Catalog;
 import com.colvir.shop.service.CatalogService;
@@ -16,8 +17,9 @@ public class CatalogController {
     private final CatalogService catalogService;
 
     @PostMapping("save")
-    public Catalog save(@RequestBody Catalog catalog) {
-        return catalogService.save(catalog);
+    public Catalog save(@RequestBody CatalogRequest catalogRequest) {
+
+        return catalogService.save(catalogRequest);
     }
 
     @GetMapping("get-by-code")
@@ -27,17 +29,17 @@ public class CatalogController {
     }
 
     @PutMapping("update")
-    public Catalog update(@RequestBody Catalog catalog) {
+    public Catalog update(@RequestBody CatalogRequest catalogRequest) {
 
-        return catalogService.update(catalog);
+        return catalogService.update(catalogRequest);
     }
 
     @DeleteMapping("delete-by-code")
-    public ResponseEntity deleteByCode(@RequestParam String catalogCode) {
+    public ResponseEntity<?> deleteByCode(@RequestParam String catalogCode) {
 
         catalogService.deleteByCode(catalogCode);
 
-        return new ResponseEntity(HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @GetMapping("get-all-catalogs")
@@ -47,11 +49,11 @@ public class CatalogController {
     }
 
     @GetMapping("load-test-data")
-    public ResponseEntity loadTestData() {
+    public ResponseEntity<?> loadTestData() {
 
         // Загрузка тестовых данных
         catalogService.loadTestData();
 
-        return new ResponseEntity(HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }

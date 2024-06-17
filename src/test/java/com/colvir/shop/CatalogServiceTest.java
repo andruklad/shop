@@ -1,12 +1,14 @@
 package com.colvir.shop;
 
+import com.colvir.shop.dto.CatalogRequest;
 import com.colvir.shop.dto.CatalogWithCategories;
 import com.colvir.shop.dto.CatalogsResponse;
 import com.colvir.shop.dto.CategoryWithProducts;
 import com.colvir.shop.expception.CatalogNotFoundException;
+import com.colvir.shop.mapper.CatalogsMapper;
 import com.colvir.shop.mapper.CatalogsMapperImpl;
-import com.colvir.shop.mapper.CategoriesByCatalogMapperImpl;
-import com.colvir.shop.mapper.ProductsByCategoryMapperImpl;
+import com.colvir.shop.mapper.CategoriesMapperImpl;
+import com.colvir.shop.mapper.ProductsMapperImpl;
 import com.colvir.shop.model.Catalog;
 import com.colvir.shop.model.Category;
 import com.colvir.shop.model.Product;
@@ -38,13 +40,16 @@ import static org.mockito.Mockito.*;
         CategoryService.class,
         ProductService.class,
         CatalogsMapperImpl.class,
-        CategoriesByCatalogMapperImpl.class,
-        ProductsByCategoryMapperImpl.class
+        CategoriesMapperImpl.class,
+        ProductsMapperImpl.class
 })
 public class CatalogServiceTest {
 
     @Autowired
     CatalogService catalogService;
+
+    @Autowired
+    CatalogsMapper catalogsMapper;
 
     @MockBean
     CatalogRepository catalogRepository;
@@ -58,15 +63,16 @@ public class CatalogServiceTest {
     @Test
     void save_succes() {
         //Подготовка входных данных
+        CatalogRequest catalogRequest = new CatalogRequest("CatalogCode1", "CatalogName1");
+        Catalog catalog = catalogsMapper.catalogRequestToCatalog(catalogRequest);
 
         //Подготовка ожидаемого результата
-        Catalog catalog = new Catalog("CatalogCode1", "CatalogName1");
         Catalog expectedCatalog = catalog;
 
         when(catalogRepository.save(catalog)).thenReturn(catalog);
 
         //Начало теста
-        Catalog actualCatalog = catalogService.save(catalog);
+        Catalog actualCatalog = catalogService.save(catalogRequest);
         assertEquals(expectedCatalog, actualCatalog);
         verify(catalogRepository).save(any());
         verifyNoMoreInteractions(catalogRepository);
@@ -75,7 +81,7 @@ public class CatalogServiceTest {
     @Test
     void getByCode_success() {
         //Подготовка входных данных
-        Catalog catalog = new Catalog("CatalogCode1", "CatalogName1");
+        Catalog catalog = new Catalog(1, "CatalogCode1", "CatalogName1");
 
         //Подготовка ожидаемого результата
         Catalog expectedCatalog = catalog;
@@ -109,7 +115,8 @@ public class CatalogServiceTest {
     @Test
     void update_success() {
         //Подготовка входных данных
-        Catalog catalog = new Catalog("CatalogCode1", "CatalogName1");
+        CatalogRequest catalogRequest = new CatalogRequest("CatalogCode1", "CatalogName1");
+        Catalog catalog = new Catalog(1, "CatalogCode1", "CatalogName1");
 
         //Подготовка ожидаемого результата
         Catalog expectedCatalog = catalog;
@@ -118,7 +125,7 @@ public class CatalogServiceTest {
         when(catalogRepository.update(catalog)).thenReturn(catalog);
 
         //Начало теста
-        Catalog actualCatalog = catalogService.update(catalog);
+        Catalog actualCatalog = catalogService.update(catalogRequest);
         assertEquals(expectedCatalog, actualCatalog);
         verify(catalogRepository).getByCode(catalog.getCode());
         verify(catalogRepository).update(catalog);
@@ -130,14 +137,14 @@ public class CatalogServiceTest {
         //Подготовка входных данных
 
         //Подготовка ожидаемого результата
-        Catalog catalog1 = new Catalog("CatalogCode1", "CatalogName1");
-        Catalog catalog2 = new Catalog("CatalogCode2", "CatalogName1");
+        Catalog catalog1 = new Catalog(1, "CatalogCode1", "CatalogName1");
+        Catalog catalog2 = new Catalog(2, "CatalogCode2", "CatalogName2");
 
-        Category category1 = new Category("CategoryCode1", "CategoryName1", "CatalogCode1");
-        Category category2 = new Category("CategoryCode2", "CategoryName2", "CatalogCode2");
+        Category category1 = new Category(1, "CategoryCode1", "CategoryName1", 1);
+        Category category2 = new Category(2, "CategoryCode2", "CategoryName2", 2);
 
-        Product product1 = new Product("001", "ProductName1", 10.0, "CategoryCode1");
-        Product product2 = new Product("002", "ProductName2", 20.0, "CategoryCode2");
+        Product product1 = new Product(1, "001", "ProductName1", 10.0, 1);
+        Product product2 = new Product(2,"002", "ProductName2", 20.0, 2);
 
         CategoryWithProducts categoryWithProducts1 = new CategoryWithProducts(category1, new HashSet<>(List.of(product1)));
         CategoryWithProducts categoryWithProducts2 = new CategoryWithProducts(category2, new HashSet<>(List.of(product2)));
@@ -150,11 +157,17 @@ public class CatalogServiceTest {
         when(catalogRepository.getCatalogs()).thenReturn(new HashSet<>(Arrays.asList(catalog1, catalog2)));
         when(categoryRepository.getCategories()).thenReturn(new HashSet<>(Arrays.asList(category1, category2)));
         when(productRepository.getProducts()).thenReturn(new HashSet<>(Arrays.asList(product1, product2)));
+        when(catalogRepository.getByCode("CatalogCode1")).thenReturn(catalog1);
+        when(catalogRepository.getByCode("CatalogCode2")).thenReturn(catalog2);
+        when(categoryRepository.getByCode(category1.getCode())).thenReturn(category1);
+        when(categoryRepository.getByCode(category2.getCode())).thenReturn(category2);
 
         //Начало теста
         CatalogsResponse actualCatalogsResponse = catalogService.getAllCatalogs();
         assertEquals(expectedCatalogsResponse, actualCatalogsResponse);
         verify(catalogRepository).getCatalogs();
+        verify(catalogRepository).getByCode("CatalogCode1");
+        verify(catalogRepository).getByCode("CatalogCode2");
         verifyNoMoreInteractions(catalogRepository);
     }
 }

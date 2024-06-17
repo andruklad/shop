@@ -1,6 +1,7 @@
 package com.colvir.shop.controller;
 
 import com.colvir.shop.dto.CategoriesByCatalogResponse;
+import com.colvir.shop.dto.CategoryRequest;
 import com.colvir.shop.model.Category;
 import com.colvir.shop.service.CategoryService;
 import lombok.RequiredArgsConstructor;
@@ -16,9 +17,9 @@ public class CategoryController {
     private final CategoryService categoryService;
 
     @PostMapping("save")
-    public Category save(@RequestBody Category category) {
+    public Category save(@RequestBody CategoryRequest categoryRequest) {
 
-        return categoryService.save(category);
+        return categoryService.save(categoryRequest);
     }
 
     @GetMapping("get-by-code")
@@ -28,16 +29,16 @@ public class CategoryController {
     }
 
     @PutMapping("update")
-    public Category update(@RequestBody Category category) {
-        return categoryService.update(category);
+    public Category update(@RequestBody CategoryRequest categoryRequest) {
+        return categoryService.update(categoryRequest);
     }
 
     @DeleteMapping("delete-by-code")
-    public ResponseEntity deleteByCode(@RequestParam String categoryCode) {
+    public ResponseEntity<?> deleteByCode(@RequestParam String categoryCode) {
 
         categoryService.deleteByCode(categoryCode);
 
-        return new ResponseEntity(HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @GetMapping("get-all-categories-by-catalog")
@@ -47,11 +48,11 @@ public class CategoryController {
     }
 
     @GetMapping("load-test-data")
-    public ResponseEntity loadTestData() {
+    public ResponseEntity<?> loadTestData() {
 
         // Загрузка тестовых данных
         categoryService.loadTestData();
 
-        return new ResponseEntity(HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }
