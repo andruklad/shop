@@ -1,6 +1,6 @@
 # Shop
 
-Version: 2.0.
+Version: 2.1.
 
 Author: Andrei Kladkevich
 
@@ -54,3 +54,6 @@ Version: 2.0.
 3. Добавлен скрипт для создания объектов в БД: script.sql.
 4. Для работы с сущностью Catalog использован JdbcTemplate.
 5. Для работы с сущностями Category и Product использован Hibernate.
+
+Version 2.1.
+Удалена поддержка работы с памятью.
