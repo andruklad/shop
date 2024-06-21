@@ -22,6 +22,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -70,7 +71,7 @@ public class CategoryServiceTest {
         Catalog catalog = new Catalog(1, "CatalogCode1", "CatalogName1");
 
         when(categoryRepository.save(category)).thenReturn(category);
-        when(catalogRepository.getByCode("CatalogCode1")).thenReturn(catalog);
+        when(catalogRepository.findByCode("CatalogCode1")).thenReturn(catalog);
 
         //Начало теста
         Category actualCategory = categoryService.save(categoryRequest);
@@ -87,12 +88,12 @@ public class CategoryServiceTest {
         // Подготовка ожидаемого результата
         Category expectedCategory = category;
 
-        when(categoryRepository.getByCode(category.getCode())).thenReturn(category);
+        when(categoryRepository.findByCode(category.getCode())).thenReturn(category);
 
         // Начало теста
         Category actualCategory = categoryService.getByCode(category.getCode());
         assertEquals(expectedCategory, actualCategory);
-        verify(categoryRepository).getByCode(category.getCode());
+        verify(categoryRepository).findByCode(category.getCode());
         verifyNoMoreInteractions(categoryRepository);
     }
 
@@ -104,12 +105,12 @@ public class CategoryServiceTest {
         // Подготовка ожидаемого результата
         String expectedMessage = String.format("Категория с кодом %s не найдена", categoryCode);
 
-        when(categoryRepository.getByCode(categoryCode)).thenReturn(null);
+        when(categoryRepository.findByCode(categoryCode)).thenReturn(null);
 
         // Начало теста
         Exception exception = assertThrows(CategoryNotFoundException.class, () -> categoryService.getByCode(categoryCode));
         assertEquals(expectedMessage, exception.getMessage());
-        verify(categoryRepository).getByCode(categoryCode);
+        verify(categoryRepository).findByCode(categoryCode);
         verifyNoMoreInteractions(categoryRepository);
     }
 
@@ -124,15 +125,15 @@ public class CategoryServiceTest {
         Category expectedCategory = categoryFromRequest;
         Catalog expectedCatalog = new Catalog(2, "CatalogCode2", "CatalogName2");
 
-        when(categoryRepository.getByCode(categoryRequest.getCode())).thenReturn(categoryFromRepository);
-        when(categoryRepository.update(categoryFromRequest)).thenReturn(expectedCategory);
-        when(catalogRepository.getByCode("CatalogCode2")).thenReturn(expectedCatalog);
+        when(categoryRepository.findByCode(categoryRequest.getCode())).thenReturn(categoryFromRepository);
+        when(categoryRepository.save(categoryFromRequest)).thenReturn(expectedCategory);
+        when(catalogRepository.findByCode("CatalogCode2")).thenReturn(expectedCatalog);
 
         //Начало теста
         Category actualProduct = categoryService.update(categoryRequest);
         assertEquals(expectedCategory, actualProduct);
-        verify(categoryRepository).getByCode(any());
-        verify(categoryRepository).update(any());
+        verify(categoryRepository).findByCode(any());
+        verify(categoryRepository).save(any());
         verifyNoMoreInteractions(categoryRepository);
     }
 
@@ -144,12 +145,12 @@ public class CategoryServiceTest {
         // Подготовка ожидаемого результата
         String code = category.getCode();
 
-        when(categoryRepository.getByCode(code)).thenReturn(category);
+        when(categoryRepository.findByCode(code)).thenReturn(category);
 
         // Начало теста
         categoryService.deleteByCode(category.getCode());
-        verify(categoryRepository).getByCode(code);
-        verify(categoryRepository).deleteByCode(category.getCode());
+        verify(categoryRepository).findByCode(code);
+        verify(categoryRepository).deleteById(category.getId());
         verifyNoMoreInteractions(categoryRepository);
     }
 
@@ -162,7 +163,6 @@ public class CategoryServiceTest {
         // Подготовка ожидаемого результата
         Category category1 = new Category(1, "CategoryCode1", "CategoryName1", 1);
         Category category2 = new Category(2, "CategoryCode2", "CategoryName2", 1);
-        Category category3 = new Category(3, "CategoryCode3", "CategoryName3", 2);
 
         Product product1 = new Product(1, "001", "ProductName1", 10.0, 1);
         Product product2 = new Product(2, "002", "ProductName2", 20.0, 1);
@@ -173,18 +173,19 @@ public class CategoryServiceTest {
         CategoriesByCatalogResponse expectedCategoriesByCatalogResponse =
                 new CategoriesByCatalogResponse(new HashSet<>(Arrays.asList(categoryWithProducts1, categoryWithProducts2)));
 
-        when(categoryRepository.getCategories()).thenReturn(new HashSet<>(Arrays.asList(category1, category2, category3)));
-        when(productRepository.getProducts()).thenReturn(new HashSet<>(Arrays.asList(product1, product2, product3)));
-        when(catalogRepository.getByCode("CatalogCode1")).thenReturn(catalog);
-        when(categoryRepository.getByCode(category1.getCode())).thenReturn(category1);
-        when(categoryRepository.getByCode(category2.getCode())).thenReturn(category2);
+        when(catalogRepository.findByCode(catalogCode)).thenReturn(catalog);
+        when(categoryRepository.findAllByCatalogId(catalog.getId())).thenReturn(new ArrayList<>(Arrays.asList(category1, category2)));
+        when(categoryRepository.findByCode(category1.getCode())).thenReturn(category1);
+        when(categoryRepository.findByCode(category2.getCode())).thenReturn(category2);
+        when(productRepository.findAllByCategoryId(category1.getId())).thenReturn(new ArrayList<>(Arrays.asList(product1, product2)));
+        when(productRepository.findAllByCategoryId(category2.getId())).thenReturn(new ArrayList<>(List.of(product3)));
 
         // Начало теста
         CategoriesByCatalogResponse actualCategoriesByCatalogResponse = categoryService.getAllCategoriesByCatalog(catalogCode);
         assertEquals(expectedCategoriesByCatalogResponse, actualCategoriesByCatalogResponse);
-        verify(categoryRepository).getCategories();
-        verify(categoryRepository).getByCode(category1.getCode());
-        verify(categoryRepository).getByCode(category2.getCode());
+        verify(categoryRepository).findAllByCatalogId(catalog.getId());
+        verify(categoryRepository).findByCode(category1.getCode());
+        verify(categoryRepository).findByCode(category2.getCode());
         verifyNoMoreInteractions(categoryRepository);
     }
 }

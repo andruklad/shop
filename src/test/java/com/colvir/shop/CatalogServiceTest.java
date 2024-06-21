@@ -25,6 +25,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -86,12 +87,12 @@ public class CatalogServiceTest {
         //Подготовка ожидаемого результата
         Catalog expectedCatalog = catalog;
 
-        when(catalogRepository.getByCode(catalog.getCode())).thenReturn(catalog);
+        when(catalogRepository.findByCode(catalog.getCode())).thenReturn(catalog);
 
         //Начало теста
         Catalog actualCatalog = catalogService.getByCode(catalog.getCode());
         assertEquals(expectedCatalog, actualCatalog);
-        verify(catalogRepository).getByCode(catalog.getCode());
+        verify(catalogRepository).findByCode(catalog.getCode());
         verifyNoMoreInteractions(catalogRepository);
     }
 
@@ -103,12 +104,12 @@ public class CatalogServiceTest {
         //Подготовка ожидаемого результата
         String expectedMessage = String.format("Каталог с кодом %s не найден", catalogCode);
 
-        when(catalogRepository.getByCode(catalogCode)).thenReturn(null);
+        when(catalogRepository.findByCode(catalogCode)).thenReturn(null);
 
         //Начало теста
         Exception exception = assertThrows(CatalogNotFoundException.class, () -> catalogService.getByCode(catalogCode));
         assertEquals(expectedMessage, exception.getMessage());
-        verify(catalogRepository).getByCode(catalogCode);
+        verify(catalogRepository).findByCode(catalogCode);
         verifyNoMoreInteractions(catalogRepository);
     }
 
@@ -121,14 +122,14 @@ public class CatalogServiceTest {
         //Подготовка ожидаемого результата
         Catalog expectedCatalog = catalog;
 
-        when(catalogRepository.getByCode(catalog.getCode())).thenReturn(catalog);
-        when(catalogRepository.update(catalog)).thenReturn(catalog);
+        when(catalogRepository.findByCode(catalog.getCode())).thenReturn(catalog);
+        when(catalogRepository.save(catalog)).thenReturn(catalog);
 
         //Начало теста
         Catalog actualCatalog = catalogService.update(catalogRequest);
         assertEquals(expectedCatalog, actualCatalog);
-        verify(catalogRepository).getByCode(catalog.getCode());
-        verify(catalogRepository).update(catalog);
+        verify(catalogRepository).findByCode(catalog.getCode());
+        verify(catalogRepository).save(catalog);
         verifyNoMoreInteractions(catalogRepository);
     }
 
@@ -154,20 +155,22 @@ public class CatalogServiceTest {
 
         CatalogsResponse expectedCatalogsResponse = new CatalogsResponse(new HashSet<>(Arrays.asList(catalogWithCategories1, catalogWithCategories2)));
 
-        when(catalogRepository.getCatalogs()).thenReturn(new HashSet<>(Arrays.asList(catalog1, catalog2)));
-        when(categoryRepository.getCategories()).thenReturn(new HashSet<>(Arrays.asList(category1, category2)));
-        when(productRepository.getProducts()).thenReturn(new HashSet<>(Arrays.asList(product1, product2)));
-        when(catalogRepository.getByCode("CatalogCode1")).thenReturn(catalog1);
-        when(catalogRepository.getByCode("CatalogCode2")).thenReturn(catalog2);
-        when(categoryRepository.getByCode(category1.getCode())).thenReturn(category1);
-        when(categoryRepository.getByCode(category2.getCode())).thenReturn(category2);
+        when(catalogRepository.findAll()).thenReturn(new ArrayList<>(Arrays.asList(catalog1, catalog2)));
+        when(catalogRepository.findByCode("CatalogCode1")).thenReturn(catalog1);
+        when(catalogRepository.findByCode("CatalogCode2")).thenReturn(catalog2);
+        when(categoryRepository.findByCode("CategoryCode1")).thenReturn(category1);
+        when(categoryRepository.findByCode("CategoryCode2")).thenReturn(category2);
+        when(categoryRepository.findAllByCatalogId(catalog1.getId())).thenReturn(new ArrayList<>(List.of(category1)));
+        when(categoryRepository.findAllByCatalogId(catalog2.getId())).thenReturn(new ArrayList<>(List.of(category2)));
+        when(productRepository.findAllByCategoryId(category1.getId())).thenReturn(new ArrayList<>(List.of(product1)));
+        when(productRepository.findAllByCategoryId(category2.getId())).thenReturn(new ArrayList<>(List.of(product2)));
 
         //Начало теста
         CatalogsResponse actualCatalogsResponse = catalogService.getAllCatalogs();
         assertEquals(expectedCatalogsResponse, actualCatalogsResponse);
-        verify(catalogRepository).getCatalogs();
-        verify(catalogRepository).getByCode("CatalogCode1");
-        verify(catalogRepository).getByCode("CatalogCode2");
+        verify(catalogRepository).findAll();
+        verify(catalogRepository).findByCode("CatalogCode1");
+        verify(catalogRepository).findByCode("CatalogCode2");
         verifyNoMoreInteractions(catalogRepository);
     }
 }

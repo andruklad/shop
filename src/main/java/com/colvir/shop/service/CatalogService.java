@@ -30,7 +30,7 @@ public class CatalogService {
 
     public Catalog getByCode(String catalogCode) {
 
-        Catalog catalog = catalogRepository.getByCode(catalogCode);
+        Catalog catalog = catalogRepository.findByCode(catalogCode);
 
         if (catalog == null) {
             throw new CatalogNotFoundException(String.format("Каталог с кодом %s не найден", catalogCode));
@@ -47,17 +47,18 @@ public class CatalogService {
         // Преобразование кода в идентификатор
         catalogForUpdate.setId(catalogByCode.getId());
 
-        return catalogRepository.update(catalogForUpdate);
+        return catalogRepository.save(catalogForUpdate);
     }
 
     public void deleteByCode(String catalogCode) {
 
         // Проверка наличия, чтобы сообщить об ошибке в случае отсутствия
-        getByCode(catalogCode);
-        catalogRepository.deleteByCode(catalogCode);
+        Catalog catalog = getByCode(catalogCode);
+        catalogRepository.deleteById(catalog.getId());
     }
 
     private void addCatalog(String catalogCode, String catalogName) {
+
         CatalogRequest catalogRequest = new CatalogRequest(catalogCode, catalogName);
         save(catalogRequest);
     }
@@ -65,7 +66,7 @@ public class CatalogService {
     public CatalogsResponse getAllCatalogs() {
 
         // Заполнение категории каждого каталога для объекта-ответа
-        Set<CatalogWithCategories> catalogsWithCategories = catalogRepository.getCatalogs().stream()
+        Set<CatalogWithCategories> catalogsWithCategories = catalogRepository.findAll().stream()
                 .map(catalog -> new CatalogWithCategories(catalog.getCode(), categoryService.getAllCategoriesByCatalog(catalog.getCode()).getCategories()))
                 .collect(Collectors.toSet());
 

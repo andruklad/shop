@@ -1,6 +1,6 @@
 # Shop
 
-Version: 2.1.
+Version: 3.0.
 
 Author: Andrei Kladkevich
 
@@ -36,6 +36,9 @@ Version: 1.0.
 
 Version: 2.0.
 Реализовать хранение сущностей в БД через Hibernate и/или JdbcTemplate.
+
+Version: 3.0.
+Для работы с БД использовать Spring Data JPA.
 
 ## Реализация.
 

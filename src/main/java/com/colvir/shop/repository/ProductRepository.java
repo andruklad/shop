@@ -1,72 +1,16 @@
 package com.colvir.shop.repository;
 
 import com.colvir.shop.model.Product;
-import jakarta.transaction.Transactional;
-import lombok.RequiredArgsConstructor;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.hibernate.query.Query;
-import org.springframework.stereotype.Repository;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-import java.util.Set;
-import java.util.stream.Collectors;
+import java.util.List;
 
-@Repository
-@Transactional
-@RequiredArgsConstructor
-public class ProductRepository {
-    // Реализация с использованием Hibernate
+public interface ProductRepository extends JpaRepository<Product, Integer> {
+    // Реализация с использованием Spring Data JPA
 
-    // Для Hibernate
-    private final SessionFactory sessionFactory;
+    Product findByArticle(String article);
 
-    public Product save(Product product) {
+    Product findFirstByOrderByPriceDesc();
 
-        Session session = sessionFactory.getCurrentSession();
-        session.persist(product);
-
-        return product;
-    }
-
-    public Product getByArticle(String article) {
-
-        Session session = sessionFactory.getCurrentSession();
-        Query<Product> query = session.createQuery("select p from Product p where p.article = :article", Product.class);
-        query.setParameter("article", article);
-        Product product = query.getResultList().stream()
-                .findFirst().orElse(null);
-
-        return product;
-    }
-
-    public Product update(Product productForUpdate) {
-
-        Session session = sessionFactory.getCurrentSession();
-        Product persistentProduct = session.get(Product.class, productForUpdate.getId());
-
-        persistentProduct.setName(productForUpdate.getName());
-        persistentProduct.setPrice(productForUpdate.getPrice());
-        persistentProduct.setCategoryId(productForUpdate.getCategoryId());
-
-        return persistentProduct;
-    }
-
-    public void deleteByArticle(String article) {
-
-        Session session = sessionFactory.getCurrentSession();
-        Query query = session.createQuery("delete Product where article = :article");
-        query.setParameter("article", article);
-        query.executeUpdate();
-    }
-
-    public Set<Product> getProducts() {
-
-        Session session = sessionFactory.getCurrentSession();
-        Query<Product> query = session.createQuery("select p from Product p", Product.class);
-        Set<Product> products = query.getResultList().stream()
-                .map(product -> new Product(product.getId(), product.getArticle(), product.getName(), product.getPrice(), product.getCategoryId()))
-                .collect(Collectors.toSet());
-
-        return products;
-    }
+    List<Product> findAllByCategoryId(Integer categoryId);
 }

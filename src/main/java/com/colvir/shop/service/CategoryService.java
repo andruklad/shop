@@ -13,6 +13,7 @@ import com.colvir.shop.repository.CategoryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -38,7 +39,7 @@ public class CategoryService {
 
     public Category getByCode(String categoryCode) {
 
-        Category category = categoryRepository.getByCode(categoryCode);
+        Category category = categoryRepository.findByCode(categoryCode);
 
         if (category == null) {
             throw new CategoryNotFoundException(String.format("Категория с кодом %s не найдена", categoryCode));
@@ -55,7 +56,7 @@ public class CategoryService {
 
     private Integer getCatalogIdByCatalogCode(String catalogCode) {
 
-        Catalog catalog = catalogRepository.getByCode(catalogCode);
+        Catalog catalog = catalogRepository.findByCode(catalogCode);
 
         if (catalog == null) {
             throw new CatalogNotFoundException(String.format("Каталог с кодом %s не найден", catalogCode));
@@ -76,24 +77,22 @@ public class CategoryService {
         fillCategoryIdByCode(category);
         fillCatalogIdByCatalogCode(category, categoryRequest.getCatalogCode());
 
-        return categoryRepository.update(category);
+        return categoryRepository.save(category);
     }
 
     public void deleteByCode(String categoryCode) {
 
         // Проверка наличия, чтобы сообщить об ошибке в случае отсутствия
-        getByCode(categoryCode);
+        Category category = getByCode(categoryCode);
 
-        categoryRepository.deleteByCode(categoryCode);
+        categoryRepository.deleteById(category.getId());
     }
 
     public CategoriesByCatalogResponse getAllCategoriesByCatalog(String catalogCode) {
 
         Integer catalogId = getCatalogIdByCatalogCode(catalogCode);
         // Отбор категорий из указанного каталога
-        Set<Category> categories = categoryRepository.getCategories().stream()
-                .filter(category -> category.getCatalogId().equals(catalogId))
-                .collect(Collectors.toSet());
+        Set<Category> categories = new HashSet<>(categoryRepository.findAllByCatalogId(catalogId));
 
         // Заполнение продуктов каждой категории для объекта-ответа
         Set<CategoryWithProducts> categoriesWithProducts = categories.stream()
@@ -105,6 +104,7 @@ public class CategoryService {
     }
 
     private void addCategory(String categoryCode, String categoryName, String catalogCode) {
+
         CategoryRequest categoryRequest = new CategoryRequest(categoryCode, categoryName, catalogCode);
         save(categoryRequest);
     }
