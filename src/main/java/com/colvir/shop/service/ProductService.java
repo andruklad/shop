@@ -12,10 +12,8 @@ import com.colvir.shop.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.Comparator;
-import java.util.NoSuchElementException;
+import java.util.HashSet;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -29,7 +27,7 @@ public class ProductService {
 
     private Integer getCategoryIdByCategoryCode(String categoryCode) {
 
-        Category category = categoryRepository.getByCode(categoryCode);
+        Category category = categoryRepository.findByCode(categoryCode);
 
         if (category == null) {
             throw new CategoryNotFoundException(String.format("Категория с кодом %s не найдена", categoryCode));
@@ -60,7 +58,7 @@ public class ProductService {
 
     public Product getByArticle(String article) {
 
-        Product product = productRepository.getByArticle(article);
+        Product product = productRepository.findByArticle(article);//productRepository.getByArticle(article);
 
         if (product == null) {
             throw new ProductNotFoundException(String.format("Продукт с артиклем %s не найден", article));
@@ -75,34 +73,32 @@ public class ProductService {
         fillProductIdByCode(product);
         fillCategoryIdByCategoryCode(product, productRequest.getCategoryCode());
 
-        return productRepository.update(product);
+        return productRepository.save(product); //productRepository.update(product);
     }
 
     public void deleteByArticle(String article) {
 
         // Проверка наличия, чтобы сообщить об ошибке в случае отсутствия
-        getByArticle(article);
+        Product product = getByArticle(article);
 
-        productRepository.deleteByArticle(article);
+        productRepository.deleteById(product.getId());
     }
 
     public Product getByMaxPrice() {
-        return productRepository.getProducts().stream()
-                .max(Comparator.comparing(Product::getPrice))
-                .orElseThrow(NoSuchElementException::new);
+
+        return productRepository.findFirstByOrderByPriceDesc();
     }
 
     public ProductsByCategoryResponse getAllProductsByCategory(String categoryCode) {
 
         Integer categoryId = getCategoryIdByCategoryCode(categoryCode);
-        Set<Product> products = productRepository.getProducts().stream()
-                .filter(product -> product.getCategoryId().equals(categoryId))
-                .collect(Collectors.toSet());
+        Set<Product> products = new HashSet<>(productRepository.findAllByCategoryId(categoryId));
 
         return productsMapper.productsToProductsByCategoryResponse(products);
     }
 
     private void addProduct(String article, String name, Double price, String categoryCode) {
+
         ProductRequest productRequest = new ProductRequest(article, name, price, categoryCode);
         save(productRequest);
     }
