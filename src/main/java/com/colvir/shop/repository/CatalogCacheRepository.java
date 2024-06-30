@@ -45,7 +45,8 @@ public class CatalogCacheRepository {
         return catalog;
     }
 
-    @Scheduled(fixedDelay = 10000L)
+//    @Scheduled(fixedDelay = 10000L)
+    // TODO. Обеспечить проверку доступности Redis
     public void clearAll() {
 
         Set<String> keys = redisTemplate.keys("*");
