@@ -3,6 +3,7 @@ package com.colvir.shop;
 import com.colvir.shop.dto.ProductRequest;
 import com.colvir.shop.dto.ProductsByCategoryResponse;
 import com.colvir.shop.expception.ProductNotFoundException;
+import com.colvir.shop.generator.CatalogGenerator;
 import com.colvir.shop.mapper.ProductsMapper;
 import com.colvir.shop.mapper.ProductsMapperImpl;
 import com.colvir.shop.model.Category;
@@ -108,7 +109,7 @@ public class ProductServiceTest {
 
         //Подготовка ожидаемого результата
         Product expectedProduct = productFromRequest;
-        Category expectedCategory = new Category(2, "CategoryCode2", "CategoryName2", 2);
+        Category expectedCategory = new Category(2, "CategoryCode2", "CategoryName2", CatalogGenerator.CATALOG_ID_2);
 
         when(productRepository.findByArticle(productFromRepository.getArticle())).thenReturn(productFromRepository);
         when(categoryRepository.findByCode(expectedCategory.getCode())).thenReturn(expectedCategory);

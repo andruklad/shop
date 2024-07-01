@@ -2,6 +2,7 @@ package com.colvir.shop.model;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -12,6 +13,7 @@ import java.util.Objects;
 @NoArgsConstructor
 @Table(name = "catalogs")
 @Entity
+@Builder(setterPrefix = "set")
 public class Catalog {
 
     @Id
