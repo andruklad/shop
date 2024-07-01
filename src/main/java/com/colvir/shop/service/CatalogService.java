@@ -6,10 +6,12 @@ import com.colvir.shop.dto.CatalogsResponse;
 import com.colvir.shop.expception.CatalogNotFoundException;
 import com.colvir.shop.mapper.CatalogsMapper;
 import com.colvir.shop.model.Catalog;
+import com.colvir.shop.repository.CatalogCacheRepository;
 import com.colvir.shop.repository.CatalogRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -19,24 +21,39 @@ public class CatalogService {
 
     private final CatalogRepository catalogRepository;
 
+    private final CatalogCacheRepository catalogCacheRepository;
+
     private final CategoryService categoryService;
 
     private final CatalogsMapper catalogsMapper;
 
     public Catalog save(CatalogRequest catalogRequest) {
+
         Catalog catalog = catalogsMapper.catalogRequestToCatalog(catalogRequest);
         return catalogRepository.save(catalog);
     }
 
     public Catalog getByCode(String catalogCode) {
 
-        Catalog catalog = catalogRepository.findByCode(catalogCode);
+        return findInCacheOrDbByCode(catalogCode);
+    }
 
-        if (catalog == null) {
+    private Catalog findInCacheOrDbByCode(String catalogCode) {
+
+        Optional<Catalog> catalogFromCache = catalogCacheRepository.findByCode(catalogCode);
+        if (catalogFromCache.isPresent()) {
+            return catalogFromCache.get();
+        }
+
+        Catalog catalogFromDb = catalogRepository.findByCode(catalogCode);
+
+        if (catalogFromDb == null) {
             throw new CatalogNotFoundException(String.format("Каталог с кодом %s не найден", catalogCode));
         }
 
-        return catalog;
+        catalogCacheRepository.save(catalogFromDb);
+
+        return catalogFromDb;
     }
 
     public Catalog update(CatalogRequest catalogRequest) {
