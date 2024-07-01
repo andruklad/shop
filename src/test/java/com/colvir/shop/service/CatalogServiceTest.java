@@ -1,9 +1,7 @@
-package com.colvir.shop;
+package com.colvir.shop.service;
 
 import com.colvir.shop.dto.CatalogRequest;
-import com.colvir.shop.dto.CatalogWithCategories;
 import com.colvir.shop.dto.CatalogsResponse;
-import com.colvir.shop.dto.CategoryWithProducts;
 import com.colvir.shop.expception.CatalogNotFoundException;
 import com.colvir.shop.generator.CatalogDtoGenerator;
 import com.colvir.shop.generator.CatalogGenerator;
@@ -18,9 +16,6 @@ import com.colvir.shop.repository.CatalogCacheRepository;
 import com.colvir.shop.repository.CatalogRepository;
 import com.colvir.shop.repository.CategoryRepository;
 import com.colvir.shop.repository.ProductRepository;
-import com.colvir.shop.service.CatalogService;
-import com.colvir.shop.service.CategoryService;
-import com.colvir.shop.service.ProductService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +25,6 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -144,6 +138,7 @@ public class CatalogServiceTest {
         //Подготовка входных данных
 
         //Подготовка ожидаемого результата
+        CatalogsResponse expectedCatalogsResponse = CatalogDtoGenerator.createCatalogsResponseBuilder().build();
         Catalog catalog1 = CatalogGenerator.createCatalogBuilder().build();
         Catalog catalog2 = CatalogGenerator.createCatalog2Builder().build();
 
@@ -153,19 +148,11 @@ public class CatalogServiceTest {
         Product product1 = new Product(1, "001", "ProductName1", 10.0, 1);
         Product product2 = new Product(2,"002", "ProductName2", 20.0, 2);
 
-        CategoryWithProducts categoryWithProducts1 = new CategoryWithProducts(category1, new HashSet<>(List.of(product1)));
-        CategoryWithProducts categoryWithProducts2 = new CategoryWithProducts(category2, new HashSet<>(List.of(product2)));
-
-        CatalogWithCategories catalogWithCategories1 = new CatalogWithCategories(catalog1.getCode(), new HashSet<>(List.of(categoryWithProducts1)));
-        CatalogWithCategories catalogWithCategories2 = new CatalogWithCategories(catalog2.getCode(), new HashSet<>(List.of(categoryWithProducts2)));
-
-        CatalogsResponse expectedCatalogsResponse = new CatalogsResponse(new HashSet<>(Arrays.asList(catalogWithCategories1, catalogWithCategories2)));
-
         when(catalogRepository.findAll()).thenReturn(new ArrayList<>(Arrays.asList(catalog1, catalog2)));
         when(catalogRepository.findByCode(catalog1.getCode())).thenReturn(catalog1);
         when(catalogRepository.findByCode(catalog2.getCode())).thenReturn(catalog2);
-        when(categoryRepository.findByCode("CategoryCode1")).thenReturn(category1);
-        when(categoryRepository.findByCode("CategoryCode2")).thenReturn(category2);
+        when(categoryRepository.findByCode(category1.getCode())).thenReturn(category1);
+        when(categoryRepository.findByCode(category2.getCode())).thenReturn(category2);
         when(categoryRepository.findAllByCatalogId(catalog1.getId())).thenReturn(new ArrayList<>(List.of(category1)));
         when(categoryRepository.findAllByCatalogId(catalog2.getId())).thenReturn(new ArrayList<>(List.of(category2)));
         when(productRepository.findAllByCategoryId(category1.getId())).thenReturn(new ArrayList<>(List.of(product1)));

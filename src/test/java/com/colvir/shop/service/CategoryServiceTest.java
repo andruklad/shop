@@ -1,4 +1,4 @@
-package com.colvir.shop;
+package com.colvir.shop.service;
 
 import com.colvir.shop.dto.CategoriesByCatalogResponse;
 import com.colvir.shop.dto.CategoryRequest;
@@ -14,8 +14,6 @@ import com.colvir.shop.model.Product;
 import com.colvir.shop.repository.CatalogRepository;
 import com.colvir.shop.repository.CategoryRepository;
 import com.colvir.shop.repository.ProductRepository;
-import com.colvir.shop.service.CategoryService;
-import com.colvir.shop.service.ProductService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
