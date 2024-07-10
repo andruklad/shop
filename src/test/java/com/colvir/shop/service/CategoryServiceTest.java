@@ -1,9 +1,10 @@
-package com.colvir.shop;
+package com.colvir.shop.service;
 
 import com.colvir.shop.dto.CategoriesByCatalogResponse;
 import com.colvir.shop.dto.CategoryRequest;
 import com.colvir.shop.dto.CategoryWithProducts;
 import com.colvir.shop.expception.CategoryNotFoundException;
+import com.colvir.shop.generator.CatalogGenerator;
 import com.colvir.shop.mapper.CategoriesMapper;
 import com.colvir.shop.mapper.CategoriesMapperImpl;
 import com.colvir.shop.mapper.ProductsMapperImpl;
@@ -13,8 +14,6 @@ import com.colvir.shop.model.Product;
 import com.colvir.shop.repository.CatalogRepository;
 import com.colvir.shop.repository.CategoryRepository;
 import com.colvir.shop.repository.ProductRepository;
-import com.colvir.shop.service.CategoryService;
-import com.colvir.shop.service.ProductService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -68,10 +67,10 @@ public class CategoryServiceTest {
 
         //Подготовка ожидаемого результата
         Category expectedCategory = category;
-        Catalog catalog = new Catalog(1, "CatalogCode1", "CatalogName1");
+        Catalog catalog = CatalogGenerator.createCatalogBuilder().build();
 
         when(categoryRepository.save(category)).thenReturn(category);
-        when(catalogRepository.findByCode("CatalogCode1")).thenReturn(catalog);
+        when(catalogRepository.findByCode(catalog.getCode())).thenReturn(catalog);
 
         //Начало теста
         Category actualCategory = categoryService.save(categoryRequest);
@@ -123,11 +122,11 @@ public class CategoryServiceTest {
 
         //Подготовка ожидаемого результата
         Category expectedCategory = categoryFromRequest;
-        Catalog expectedCatalog = new Catalog(2, "CatalogCode2", "CatalogName2");
+        Catalog expectedCatalog = CatalogGenerator.createCatalog2Builder().build();
 
         when(categoryRepository.findByCode(categoryRequest.getCode())).thenReturn(categoryFromRepository);
         when(categoryRepository.save(categoryFromRequest)).thenReturn(expectedCategory);
-        when(catalogRepository.findByCode("CatalogCode2")).thenReturn(expectedCatalog);
+        when(catalogRepository.findByCode(expectedCatalog.getCode())).thenReturn(expectedCatalog);
 
         //Начало теста
         Category actualProduct = categoryService.update(categoryRequest);
@@ -157,12 +156,12 @@ public class CategoryServiceTest {
     @Test
     void getAllCategoriesByCatalog_success() {
         // Подготовка входных данных
-        String catalogCode = "CatalogCode1";
-        Catalog catalog = new Catalog(1, catalogCode, "CatalogName1");
+        String catalogCode = CatalogGenerator.CATALOG_CODE;
+        Catalog catalog = CatalogGenerator.createCatalogBuilder().build();
 
         // Подготовка ожидаемого результата
-        Category category1 = new Category(1, "CategoryCode1", "CategoryName1", 1);
-        Category category2 = new Category(2, "CategoryCode2", "CategoryName2", 1);
+        Category category1 = new Category(1, "CategoryCode1", "CategoryName1", catalog.getId());
+        Category category2 = new Category(2, "CategoryCode2", "CategoryName2", catalog.getId());
 
         Product product1 = new Product(1, "001", "ProductName1", 10.0, 1);
         Product product2 = new Product(2, "002", "ProductName2", 20.0, 1);

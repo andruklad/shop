@@ -1,15 +1,15 @@
-package com.colvir.shop;
+package com.colvir.shop.service;
 
 import com.colvir.shop.dto.ProductRequest;
 import com.colvir.shop.dto.ProductsByCategoryResponse;
 import com.colvir.shop.expception.ProductNotFoundException;
+import com.colvir.shop.generator.CatalogGenerator;
 import com.colvir.shop.mapper.ProductsMapper;
 import com.colvir.shop.mapper.ProductsMapperImpl;
 import com.colvir.shop.model.Category;
 import com.colvir.shop.model.Product;
 import com.colvir.shop.repository.CategoryRepository;
 import com.colvir.shop.repository.ProductRepository;
-import com.colvir.shop.service.ProductService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -108,7 +108,7 @@ public class ProductServiceTest {
 
         //Подготовка ожидаемого результата
         Product expectedProduct = productFromRequest;
-        Category expectedCategory = new Category(2, "CategoryCode2", "CategoryName2", 2);
+        Category expectedCategory = new Category(2, "CategoryCode2", "CategoryName2", CatalogGenerator.CATALOG_ID_2);
 
         when(productRepository.findByArticle(productFromRepository.getArticle())).thenReturn(productFromRepository);
         when(categoryRepository.findByCode(expectedCategory.getCode())).thenReturn(expectedCategory);

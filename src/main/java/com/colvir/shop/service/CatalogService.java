@@ -40,10 +40,11 @@ public class CatalogService {
 
     private Catalog findInCacheOrDbByCode(String catalogCode) {
 
-        Optional<Catalog> catalogFromCache = catalogCacheRepository.findByCode(catalogCode);
-        if (catalogFromCache.isPresent()) {
-            return catalogFromCache.get();
-        }
+        // TODO. Обеспечить проверку доступности Redis
+//        Optional<Catalog> catalogFromCache = catalogCacheRepository.findByCode(catalogCode);
+//        if (catalogFromCache.isPresent()) {
+//            return catalogFromCache.get();
+//        }
 
         Catalog catalogFromDb = catalogRepository.findByCode(catalogCode);
 
@@ -51,7 +52,7 @@ public class CatalogService {
             throw new CatalogNotFoundException(String.format("Каталог с кодом %s не найден", catalogCode));
         }
 
-        catalogCacheRepository.save(catalogFromDb);
+//        catalogCacheRepository.save(catalogFromDb);
 
         return catalogFromDb;
     }
